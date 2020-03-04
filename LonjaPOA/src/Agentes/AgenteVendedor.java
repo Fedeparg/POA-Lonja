@@ -33,6 +33,9 @@ public class AgenteVendedor extends Agent {
 
 	}
 	
+	
+	// TODO cambiar el tipo de behaviour porque cuando recibe el INFORM no lo lee hasta que toca el tick
+	// Posible solucion: one shot que en caso de recibir refuse vuelve llama otra vez al metodo action?
 	class Registro extends TickerBehaviour {
 
 		public Registro(Agent a, long period) {
