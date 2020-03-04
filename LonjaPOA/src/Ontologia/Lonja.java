@@ -1,11 +1,13 @@
 package Ontologia;
 
+import java.security.acl.AclNotFoundException;
 import java.util.LinkedList;
 
 import Protocolos.AdmisionVendedorP;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
+import jade.core.behaviours.OneShotBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -39,6 +41,18 @@ public class Lonja extends Agent{
 		} catch (FIPAException e) {
 			e.printStackTrace();
 		}
+		
+		/*addBehaviour(new Achi() {
+			
+			@Override
+			public void action() {
+				
+				MessageTemplate msjRegistroVendedor = MessageTemplate.MatchConversationId("RegistroVendedore");
+				Vendedor vendedor = null;
+				vendedor = msjRegistroVendedor.get
+				
+			}
+		});*/
 		
 	}
 	

@@ -1,5 +1,6 @@
 package Ontologia;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,6 +40,7 @@ public class Vendedor extends Agent {
 				DFAgentDescription template = new DFAgentDescription();
 				ServiceDescription sd = new ServiceDescription();
 				sd.setType("lonja");
+				sd.setType("lonja");
 				template.addServices(sd);
 				DFAgentDescription[] result;
 				try {
@@ -52,9 +54,16 @@ public class Vendedor extends Agent {
 				}	
 				
 				for (AID lonja : lonjas) {
-					ACLMessage peticion = new ACLMessage(ACLMessage.REQUEST);
-					peticion.addReceiver(lonja);
-					//peticion.
+					ACLMessage mensajeRegistro = new ACLMessage(ACLMessage.REQUEST);
+					mensajeRegistro.addReceiver(lonja);
+					try {
+						mensajeRegistro.setContentObject(this);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					mensajeRegistro.setConversationId("RegistroVendedor");
+					send(mensajeRegistro);
 				}
 				
 				
