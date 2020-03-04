@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import jade.content.onto.SerializableOntology;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
@@ -15,8 +16,9 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import jade.util.leap.Serializable;
 
-public class Vendedor extends Agent {
+public class Vendedor implements Serializable{
 
 	private int id;
 	private String nombre;
@@ -30,67 +32,27 @@ public class Vendedor extends Agent {
 		this.productosVendidos = (LinkedList<Articulo>) productosAVender;
 		this.productosPendientesCobro = new LinkedList<Articulo>();
 	}
-
-	public void setup() {
-
-		Behaviour registro = new Registro(this, 10000);
-		addBehaviour(registro);
-
+	
+	public int getId() {
+		return id;
 	}
 
-	class Registro extends TickerBehaviour {
-
-		public Registro(Agent a, long period) {
-			super(a, period);
-		}
-
-		@Override
-		protected void onTick() {
-			DFAgentDescription template = new DFAgentDescription();
-			ServiceDescription sd = new ServiceDescription();
-			sd.setType("lonja");
-			sd.setType("lonja");
-			template.addServices(sd);
-			DFAgentDescription[] result;
-			try {
-				result = DFService.search(myAgent, template);
-				lonjas = new AID[result.length];
-				for (int i = 0; i < result.length; i++) {
-					lonjas[i] = result[i].getName();
-				}
-			} catch (FIPAException e) {
-				e.printStackTrace();
-			}
-
-			for (AID lonja : lonjas) {
-				ACLMessage mensajeRegistro = new ACLMessage(ACLMessage.REQUEST);
-				mensajeRegistro.addReceiver(lonja);
-				try {
-					mensajeRegistro.setContentObject(this);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				mensajeRegistro.setConversationId("RegistroVendedor");
-				send(mensajeRegistro);
-				System.out.println("Enviando peticion de registro a lonja " + lonja);
-			}
-
-			MessageTemplate msjRegistroVendedor = MessageTemplate.MatchConversationId("RegistroVendedor");
-			ACLMessage msjRegistro = receive(msjRegistroVendedor);
-			if (msjRegistro != null) {
-				if (msjRegistro.getPerformative() == ACLMessage.INFORM) {
-					String contenido = msjRegistro.getContent();
-					System.out.println(contenido);
-					this.stop();
-				} else { // ACLMessage.FAIULURE
-					String contenido = msjRegistro.getContent();
-					System.out.println(contenido);
-				}
-
-			}
-
-		}
-
+	public String getNombre() {
+		return nombre;
 	}
+
+	public LinkedList<Articulo> getProductosVendidos() {
+		return productosVendidos;
+	}
+
+	public LinkedList<Articulo> getProductosPendientesCobro() {
+		return productosPendientesCobro;
+	}
+
+	public AID[] getLonjas() {
+		return lonjas;
+	}
+
+	
 
 }

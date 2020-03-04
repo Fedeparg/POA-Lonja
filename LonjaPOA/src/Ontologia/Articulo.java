@@ -14,4 +14,29 @@ public class Articulo {
 	private Date horaRegistro;
 	private Date horaVenta;
 	
+	public Pescado getPescado() {
+		return pescado;
+	}
+	public double getKilos() {
+		return kilos;
+	}
+	public Vendedor getVendedor() {
+		return vendedor;
+	}
+	public double getPrecioSalida() {
+		return precioSalida;
+	}
+	public double getPrecioReserva() {
+		return precioReserva;
+	}
+	public double getPrecioFinal() {
+		return precioFinal;
+	}
+	public Date getHoraRegistro() {
+		return horaRegistro;
+	}
+	public Date getHoraVenta() {
+		return horaVenta;
+	}
+	
 }
