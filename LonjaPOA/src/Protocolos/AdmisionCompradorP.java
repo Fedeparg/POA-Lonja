@@ -1,6 +1,7 @@
 package Protocolos;
 
 import Agentes.AgenteLonja;
+import Ontologia.Comprador;
 import Ontologia.Vendedor;
 import jade.core.Agent;
 import jade.domain.FIPAAgentManagement.FailureException;
@@ -11,41 +12,42 @@ import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import jade.proto.AchieveREResponder;
 
-public class AdmisionVendedorP extends AchieveREResponder {
+@SuppressWarnings("serial")
+public class AdmisionCompradorP extends AchieveREResponder {
 
-	public AdmisionVendedorP(Agent a, MessageTemplate mt) {
+	public AdmisionCompradorP(Agent a, MessageTemplate mt) {
 		super(a, mt);
 	}
 
 	protected ACLMessage prepareResponse(ACLMessage msjRegistro) throws NotUnderstoodException, RefuseException {
-		System.out.println(this.getAgent().getLocalName() + ": Recibida petici�n de registro vendedor de "
+		System.out.println(this.getAgent().getLocalName() + ": Recibida peticion de registro comprador de "
 				+ msjRegistro.getSender().getLocalName());
-		Vendedor vendedor = null;
+		Comprador comprador = null;
 		try {
-			vendedor = (Vendedor) msjRegistro.getContentObject();
+			comprador = (Comprador) msjRegistro.getContentObject();
 		} catch (UnreadableException e) {
 			System.out.println("Fallo al sacar el vendedor del mensaje de registro");
 			e.printStackTrace();
 		}
 		// A�adimos el vendedor a lista de vendedores
-		if (vendedor != null && !((AgenteLonja) this.myAgent).containsVendedor(vendedor)) {
+		if (comprador != null && !((AgenteLonja) this.myAgent).containsComprador(comprador)) {
 			System.out.println(
-					this.getAgent().getLocalName() + ": A�adido vendedor " + msjRegistro.getSender().getLocalName());
-			((AgenteLonja) this.myAgent).addVendedor(vendedor);
+					this.getAgent().getLocalName() + ": Anadido comprador " + msjRegistro.getSender().getLocalName());
+			((AgenteLonja) this.myAgent).addComprador(comprador);
 			ACLMessage registroVendedorExito = new ACLMessage(ACLMessage.INFORM);
-			registroVendedorExito.setConversationId("RegistroVendedor");
+			registroVendedorExito.setConversationId("RegistroComprador");
 			registroVendedorExito.setContent("Registrado correctamente");
 			registroVendedorExito.addReceiver(msjRegistro.getSender());
-			System.out.println(this.myAgent.getLocalName() + ": Enviando mensaje de registro con exito de vendedor a "
-					+ vendedor.getNombre());
+			System.out.println(this.myAgent.getLocalName() + ": Enviando mensaje de registro con exito de comprador a "
+					+ comprador.getNombre());
 			return registroVendedorExito;
 		} else {
 			ACLMessage registroVendedorFallo = new ACLMessage(ACLMessage.FAILURE);
-			registroVendedorFallo.setConversationId("RegistroVendedor");
+			registroVendedorFallo.setConversationId("RegistroComprador");
 			registroVendedorFallo.setContent("Fallo en el registro");
 			registroVendedorFallo.addReceiver(msjRegistro.getSender());
-			System.out.println(this.myAgent.getLocalName() + ": Enviando mensaje de fallo en el registro de vendedor a "
-					+ vendedor.getNombre());
+			System.out.println(this.myAgent.getLocalName() + ": Enviando mensaje de fallo en el registro de comprador a "
+					+ comprador.getNombre());
 			return registroVendedorFallo;
 		}
 	}

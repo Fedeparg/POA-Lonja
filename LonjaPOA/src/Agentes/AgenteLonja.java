@@ -4,6 +4,8 @@ import java.util.LinkedList;
 
 import Ontologia.Comprador;
 import Ontologia.Vendedor;
+import Protocolos.AdmisionCompradorI;
+import Protocolos.AdmisionCompradorP;
 import Protocolos.AdmisionVendedorP;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
@@ -44,86 +46,31 @@ public class AgenteLonja extends Agent {
 		}
 
 		// Registro vendedor
-		//addBehaviour(new AdmisionVendedor());
-//		MessageTemplate msjRegistroVendedor = MessageTemplate.MatchConversationId("RegistroVendedor");
-		MessageTemplate msjRegistroVendedor = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
+		MessageTemplate msjRegistroVendedor = MessageTemplate.MatchConversationId("RegistroVendedor");
 		addBehaviour(new AdmisionVendedorP(this, msjRegistroVendedor));
+		
+		// Registro comprador
+		MessageTemplate msjRegistroComprador = MessageTemplate.MatchConversationId("RegistroComprador");
+		addBehaviour(new AdmisionCompradorP(this, msjRegistroComprador));
 	}
-
-	@SuppressWarnings("serial")
-	/*class AdmisionVendedor extends Behaviour {
-
-		Vendedor vendedor = null;
-
-		@Override
-		public void action() {
-
-			// Recibimos la peticion de registro del vendedor
-			MessageTemplate msjRegistroVendedor = MessageTemplate.MatchConversationId("RegistroVendedor");
-			ACLMessage msjRegistro = receive(msjRegistroVendedor);
-			if (msjRegistro != null) {
-				System.out.println(this.getAgent().getLocalName() + ": Recibida petici�n de registro vendedor de " + msjRegistro.getSender().getLocalName());
-				try {
-					vendedor = (Vendedor) msjRegistro.getContentObject();
-				} catch (UnreadableException e) {
-					System.out.println("Fallo al sacar el vendedor del mensaje de registro");
-					e.printStackTrace();
-				}
-				// A�adimos el vendedor a lista de vendedores
-				if (vendedor != null && !vendedores.contains(vendedor)) {
-					System.out.println(this.getAgent().getLocalName() + ": A�adido vendedor " + msjRegistro.getSender().getLocalName());
-					vendedores.add(vendedor);
-					ACLMessage registroVendedorExito = new ACLMessage(ACLMessage.INFORM);
-					registroVendedorExito.setConversationId("RegistroVendedor");
-					registroVendedorExito.setContent("Registrado correctamente");
-					registroVendedorExito.addReceiver(msjRegistro.getSender());
-					send(registroVendedorExito);
-					System.out.println(this.myAgent.getLocalName() + ": Enviando mensaje de registro con exito de vendedor a " + vendedor.getNombre());
-				} else {
-					ACLMessage registroVendedor = new ACLMessage(ACLMessage.FAILURE);
-					registroVendedor.setConversationId("RegistroVendedor");
-					registroVendedor.setContent("Fallo en el registro");
-					registroVendedor.addReceiver(msjRegistro.getSender());
-					send(registroVendedor);
-					System.out.println(this.myAgent.getLocalName() + ": Enviando mensaje de fallo en el registro de vendedor a " + vendedor.getNombre());
-				}
-				
-			}
-		}
-
-		@Override
-		public boolean done() {
-			/*for (Vendedor vendedor : vendedores) {
-				System.out.println("Vendedor en lista de vendedores:" + vendedor.getNombre());
-			}
-			if (vendedores.contains(vendedor)) { // Se ha a�adido el vendedor
-				ACLMessage registroVendedorExito = new ACLMessage(ACLMessage.INFORM);
-				registroVendedorExito.setConversationId("RegistroVendedor");
-				registroVendedorExito.setContent("Registrado correctamente");
-				send(registroVendedorExito);
-				System.out.println(this.myAgent.getLocalName() + ": Enviando mensaje de registro con exito de vendedor a " + vendedor.getNombre());
-				return true;
-			} else { // No se ha a�adido el vendedor
-				ACLMessage registroVendedor = new ACLMessage(ACLMessage.FAILURE);
-				registroVendedor.setConversationId("RegistroVendedor");
-				registroVendedor.setContent("Fallo en el registro");
-				send(registroVendedor);
-				//System.out.println(this.myAgent.getLocalName() + ": Enviando mensaje de fallo en el registro de vendedor a " + vendedor.getNombre());
-				return false;
-			}
-			return false;
-
-		}
-	}*/
 
 	public void addVendedor(Vendedor vendedor) {
 		if (!this.vendedores.contains(vendedor)) {
 			this.vendedores.add(vendedor);
 		}
-		
 	}
 
 	public boolean containsVendedor(Vendedor vendedor) {
 		return this.vendedores.contains(vendedor);
-	};
+	}
+	
+	public void addComprador(Comprador comprador) {
+		if (!this.compradores.contains(comprador)) {
+			this.compradores.add(comprador);
+		}
+	}
+
+	public boolean containsComprador(Comprador comprador) {
+		return this.compradores.contains(comprador);
+	}
 }

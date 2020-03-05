@@ -16,7 +16,7 @@ public class EscenarioPrueba {
 
 			// Obtenemos una instancia del entorno runtime de Jade
 			Runtime rt = Runtime.instance();
-			// Terminamos la máquinq virtual si no hubiera ningún contenedor de agentes activo
+			// Terminamos la mï¿½quinq virtual si no hubiera ningï¿½n contenedor de agentes activo
 			rt.setCloseVM(true);
 			// Lanzamos una plataforma en el puerto 8888
 			// Y creamos un profile de la plataforma a partir de la cual podemos
@@ -45,6 +45,11 @@ public class EscenarioPrueba {
 			Object[] argumentosVendedor2 = {vendedor2};
 			AgentController agenteVendedor2 = mc.createNewAgent("AgenteVendedor2", Agentes.AgenteVendedor.class.getName(), argumentosVendedor2);
 			agenteVendedor2.start();
+			
+			Comprador comprador1= new Comprador(1, "AgenteComprador1", new LinkedList<ArticuloCompra>(), 0);
+			Object[] argumentosComprador1 =  {comprador1};
+			AgentController agenteComprador1 = mc.createNewAgent("AgenteComprador1", Agentes.AgenteComprador.class.getName(), argumentosComprador1);
+			agenteComprador1.start();
 
 		} catch(Exception e) {
 			e.printStackTrace();
