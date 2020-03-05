@@ -45,7 +45,8 @@ public class AgenteLonja extends Agent {
 
 		// Registro vendedor
 		//addBehaviour(new AdmisionVendedor());
-		MessageTemplate msjRegistroVendedor = MessageTemplate.MatchConversationId("RegistroVendedor");
+//		MessageTemplate msjRegistroVendedor = MessageTemplate.MatchConversationId("RegistroVendedor");
+		MessageTemplate msjRegistroVendedor = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
 		addBehaviour(new AdmisionVendedorP(this, msjRegistroVendedor));
 	}
 
@@ -68,7 +69,7 @@ public class AgenteLonja extends Agent {
 					System.out.println("Fallo al sacar el vendedor del mensaje de registro");
 					e.printStackTrace();
 				}
-				// Añadimos el vendedor a lista de vendedores
+				// Aï¿½adimos el vendedor a lista de vendedores
 				if (vendedor != null && !vendedores.contains(vendedor)) {
 					System.out.println(this.getAgent().getLocalName() + ": Aï¿½adido vendedor " + msjRegistro.getSender().getLocalName());
 					vendedores.add(vendedor);
