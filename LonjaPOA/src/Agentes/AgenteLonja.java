@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 import Ontologia.Comprador;
 import Ontologia.Vendedor;
+import Protocolos.AdmisionVendedorP;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.domain.DFService;
@@ -43,12 +44,13 @@ public class AgenteLonja extends Agent {
 		}
 
 		// Registro vendedor
-		addBehaviour(new AdmisionVendedor());
-
+		//addBehaviour(new AdmisionVendedor());
+		MessageTemplate msjRegistroVendedor = MessageTemplate.MatchConversationId("RegistroVendedor");
+		addBehaviour(new AdmisionVendedorP(this, msjRegistroVendedor));
 	}
 
 	@SuppressWarnings("serial")
-	class AdmisionVendedor extends Behaviour {
+	/*class AdmisionVendedor extends Behaviour {
 
 		Vendedor vendedor = null;
 
@@ -66,7 +68,7 @@ public class AgenteLonja extends Agent {
 					System.out.println("Fallo al sacar el vendedor del mensaje de registro");
 					e.printStackTrace();
 				}
-				// Aï¿½adimos el vendedor a lista de vendedores
+				// Añadimos el vendedor a lista de vendedores
 				if (vendedor != null && !vendedores.contains(vendedor)) {
 					System.out.println(this.getAgent().getLocalName() + ": Aï¿½adido vendedor " + msjRegistro.getSender().getLocalName());
 					vendedores.add(vendedor);
@@ -107,9 +109,20 @@ public class AgenteLonja extends Agent {
 				send(registroVendedor);
 				//System.out.println(this.myAgent.getLocalName() + ": Enviando mensaje de fallo en el registro de vendedor a " + vendedor.getNombre());
 				return false;
-			}*/
+			}
 			return false;
 
 		}
+	}*/
+
+	public void addVendedor(Vendedor vendedor) {
+		if (!this.vendedores.contains(vendedor)) {
+			this.vendedores.add(vendedor);
+		}
+		
+	}
+
+	public boolean containsVendedor(Vendedor vendedor) {
+		return this.vendedores.contains(vendedor);
 	};
 }
