@@ -1,8 +1,6 @@
 package Agentes;
 
 import java.io.IOException;
-import java.io.Serializable;
-
 import Ontologia.Vendedor;
 import jade.core.AID;
 import jade.core.Agent;
@@ -15,6 +13,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
+@SuppressWarnings("serial")
 public class AgenteVendedor extends Agent {
 
 	private AID[] lonjas;

@@ -1,9 +1,8 @@
 package Protocolos;
 
-import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.OneShotBehaviour;
-import jade.lang.acl.ACLMessage;
 
+@SuppressWarnings("serial")
 public class AdmisionVendedorI extends OneShotBehaviour{
 
 	@Override

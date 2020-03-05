@@ -2,6 +2,7 @@ package Protocolos;
 
 import jade.core.behaviours.Behaviour;
 
+@SuppressWarnings("serial")
 public class AdmisionVendedorP extends Behaviour{
 
 	@Override

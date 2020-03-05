@@ -14,6 +14,7 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 
+@SuppressWarnings("serial")
 public class AgenteLonja extends Agent {
 
 	private LinkedList<Vendedor> vendedores;
@@ -46,6 +47,7 @@ public class AgenteLonja extends Agent {
 
 	}
 
+	@SuppressWarnings("serial")
 	class AdmisionVendedor extends Behaviour {
 
 		Vendedor vendedor = null;
@@ -57,16 +59,16 @@ public class AgenteLonja extends Agent {
 			MessageTemplate msjRegistroVendedor = MessageTemplate.MatchConversationId("RegistroVendedor");
 			ACLMessage msjRegistro = receive(msjRegistroVendedor);
 			if (msjRegistro != null) {
-				System.out.println(this.getAgent().getLocalName() + ": Recibida petición de registro vendedor de " + msjRegistro.getSender().getLocalName());
+				System.out.println(this.getAgent().getLocalName() + ": Recibida peticiï¿½n de registro vendedor de " + msjRegistro.getSender().getLocalName());
 				try {
 					vendedor = (Vendedor) msjRegistro.getContentObject();
 				} catch (UnreadableException e) {
 					System.out.println("Fallo al sacar el vendedor del mensaje de registro");
 					e.printStackTrace();
 				}
-				// Añadimos el vendedor a lista de vendedores
+				// Aï¿½adimos el vendedor a lista de vendedores
 				if (vendedor != null && !vendedores.contains(vendedor)) {
-					System.out.println(this.getAgent().getLocalName() + ": Añadido vendedor " + msjRegistro.getSender().getLocalName());
+					System.out.println(this.getAgent().getLocalName() + ": Aï¿½adido vendedor " + msjRegistro.getSender().getLocalName());
 					vendedores.add(vendedor);
 					ACLMessage registroVendedorExito = new ACLMessage(ACLMessage.INFORM);
 					registroVendedorExito.setConversationId("RegistroVendedor");
@@ -91,14 +93,14 @@ public class AgenteLonja extends Agent {
 			/*for (Vendedor vendedor : vendedores) {
 				System.out.println("Vendedor en lista de vendedores:" + vendedor.getNombre());
 			}
-			if (vendedores.contains(vendedor)) { // Se ha añadido el vendedor
+			if (vendedores.contains(vendedor)) { // Se ha aï¿½adido el vendedor
 				ACLMessage registroVendedorExito = new ACLMessage(ACLMessage.INFORM);
 				registroVendedorExito.setConversationId("RegistroVendedor");
 				registroVendedorExito.setContent("Registrado correctamente");
 				send(registroVendedorExito);
 				System.out.println(this.myAgent.getLocalName() + ": Enviando mensaje de registro con exito de vendedor a " + vendedor.getNombre());
 				return true;
-			} else { // No se ha añadido el vendedor
+			} else { // No se ha aï¿½adido el vendedor
 				ACLMessage registroVendedor = new ACLMessage(ACLMessage.FAILURE);
 				registroVendedor.setConversationId("RegistroVendedor");
 				registroVendedor.setContent("Fallo en el registro");
