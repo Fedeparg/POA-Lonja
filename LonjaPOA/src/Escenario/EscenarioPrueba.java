@@ -36,12 +36,18 @@ public class EscenarioPrueba {
 			lonja.start();
 			
 			// Creamos los vendedores
-			Vendedor vendedor1 = new Vendedor(1, "AgenteVendedor1", new LinkedList<Articulo>());
+			
+			int idArticulos = 0;
+			Vendedor vendedor1 = new Vendedor(1, "AgenteVendedor1");
+			Articulo articulo1 = new Articulo(idArticulos, Pescado.ATUN, 10, 50, vendedor1);
+			Articulo articulo2 = new Articulo(++idArticulos, Pescado.BACALAO, 10, 50, vendedor1);
+			vendedor1.addArticuloParaVender(articulo1);
+			vendedor1.addArticuloParaVender(articulo2);
 			Object[] argumentosVendedor1 = {vendedor1};
 			AgentController agenteVendedor1 = mc.createNewAgent("AgenteVendedor1", Agentes.AgenteVendedor.class.getName(), argumentosVendedor1);
 			agenteVendedor1.start();
 			
-			Vendedor vendedor2 = new Vendedor(2, "AgenteVendedor2", new LinkedList<Articulo>());
+			Vendedor vendedor2 = new Vendedor(2, "AgenteVendedor2");
 			Object[] argumentosVendedor2 = {vendedor2};
 			AgentController agenteVendedor2 = mc.createNewAgent("AgenteVendedor2", Agentes.AgenteVendedor.class.getName(), argumentosVendedor2);
 			agenteVendedor2.start();

@@ -6,7 +6,7 @@ import jade.proto.AchieveREInitiator;
 
 @SuppressWarnings("serial")
 public class AdmisionVendedorI extends AchieveREInitiator{
-
+	
 	public AdmisionVendedorI(Agent a, ACLMessage msg) {
 		super(a, msg);
 	}
@@ -17,8 +17,7 @@ public class AdmisionVendedorI extends AchieveREInitiator{
 	
 	protected void handleFailure(ACLMessage msjRegistroFallo) {
 		System.out.println(this.myAgent.getLocalName() + ": Enviando mensaje de fallo en el registro en  " + msjRegistroFallo.getSender().getLocalName());
-		this.reset();
 	}
 
-	
+
 }

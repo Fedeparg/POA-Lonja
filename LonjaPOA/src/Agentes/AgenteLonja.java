@@ -1,12 +1,17 @@
 package Agentes;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 
+import Ontologia.Articulo;
 import Ontologia.Comprador;
 import Ontologia.Vendedor;
 import Protocolos.AdmisionCompradorI;
 import Protocolos.AdmisionCompradorP;
 import Protocolos.AdmisionVendedorP;
+import Protocolos.DepositoArticuloP;
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.domain.DFService;
@@ -20,12 +25,22 @@ import jade.lang.acl.UnreadableException;
 @SuppressWarnings("serial")
 public class AgenteLonja extends Agent {
 
-	private LinkedList<Vendedor> vendedores;
-	private LinkedList<Comprador> compradores;
+	//private LinkedList<Vendedor> vendedores;
+	//private LinkedList<Comprador> compradores;
+	
+	private HashMap<AID, Vendedor> vendedores;
+	private HashMap<AID, Comprador> compradores;
+	private LinkedList<Articulo> articulosParaSubastar;
+	private LinkedList<Articulo> articulosCompradosNoPagados;
+	private LinkedList<Articulo> articulosImposiblesDeVender;
+
 
 	public AgenteLonja() {
-		this.vendedores = new LinkedList<Vendedor>();
-		this.compradores = new LinkedList<Comprador>();
+		this.vendedores = new HashMap<AID, Vendedor>();
+		this.compradores = new HashMap<AID, Comprador>();
+		this.articulosParaSubastar = new LinkedList<Articulo>();
+		this.articulosCompradosNoPagados = new LinkedList<Articulo>();
+		this.articulosImposiblesDeVender = new LinkedList<Articulo>();
 	}
 
 	public void setup() {
@@ -52,25 +67,34 @@ public class AgenteLonja extends Agent {
 		// Registro comprador
 		MessageTemplate msjRegistroComprador = MessageTemplate.MatchConversationId("RegistroComprador");
 		addBehaviour(new AdmisionCompradorP(this, msjRegistroComprador));
+		
+		// Deposito de articulos
+		MessageTemplate msjDeposito = MessageTemplate.MatchConversationId("DepositoArticulo");
+		addBehaviour(new DepositoArticuloP (this, msjDeposito));
 	}
 
-	public void addVendedor(Vendedor vendedor) {
-		if (!this.vendedores.contains(vendedor)) {
-			this.vendedores.add(vendedor);
+	public void addVendedor(AID AIDvendedor, Vendedor vendedor) {
+		if (!this.vendedores.containsValue(vendedor)) {
+			this.vendedores.put(AIDvendedor, vendedor);
 		}
 	}
 
-	public boolean containsVendedor(Vendedor vendedor) {
-		return this.vendedores.contains(vendedor);
+	public boolean containsVendedor(AID aidVendedor) {
+		return this.vendedores.containsKey(aidVendedor);
 	}
 	
-	public void addComprador(Comprador comprador) {
-		if (!this.compradores.contains(comprador)) {
-			this.compradores.add(comprador);
+	public void addComprador(AID AIDcomprador, Comprador comprador) {
+		if (!this.compradores.containsValue(comprador)) {
+			this.compradores.put(AIDcomprador, comprador);
 		}
 	}
 
-	public boolean containsComprador(Comprador comprador) {
-		return this.compradores.contains(comprador);
+	public boolean containsComprador(AID aidComprador) {
+		return this.compradores.containsKey(aidComprador);
+	}
+
+	public void addArticuloParaSubastar(Articulo articulo) {
+		articulo.setHoraRegistro(new Date());
+		this.articulosParaSubastar.add(articulo);
 	}
 }

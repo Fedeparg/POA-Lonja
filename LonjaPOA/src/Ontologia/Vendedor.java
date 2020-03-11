@@ -11,14 +11,14 @@ public class Vendedor implements Serializable{
 
 	private int id;
 	private String nombre;
-	private LinkedList<Articulo> productosVendidos;
+	private LinkedList<Articulo> productosParaVender;
 	private LinkedList<Articulo> productosPendientesCobro;
 	private AID[] lonjas;
 
-	public Vendedor(int id, String nombre, List<Articulo> productosAVender) {
+	public Vendedor(int id, String nombre) {
 		this.id = id;
 		this.nombre = nombre;
-		this.productosVendidos = (LinkedList<Articulo>) productosAVender;
+		this.productosParaVender = new LinkedList<Articulo>();
 		this.productosPendientesCobro = new LinkedList<Articulo>();
 	}
 	
@@ -30,8 +30,8 @@ public class Vendedor implements Serializable{
 		return nombre;
 	}
 
-	public LinkedList<Articulo> getProductosVendidos() {
-		return productosVendidos;
+	public LinkedList<Articulo> getProductosParaVender() {
+		return productosParaVender;
 	}
 
 	public LinkedList<Articulo> getProductosPendientesCobro() {
@@ -40,6 +40,12 @@ public class Vendedor implements Serializable{
 
 	public AID[] getLonjas() {
 		return lonjas;
+	}
+	
+	public void addArticuloParaVender(Articulo articulo) {
+		if (articulo.getVendedor().equals(this)) {
+			this.productosParaVender.add(articulo);
+		}
 	}
 
 	
