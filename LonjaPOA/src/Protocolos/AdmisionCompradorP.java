@@ -27,18 +27,19 @@ public class AdmisionCompradorP extends AchieveREResponder {
 			System.out.println("Fallo al sacar el vendedor del mensaje de registro");
 			e.printStackTrace();
 		}
-		// Añadimos el vendedor a lista de vendedores
+		// Aï¿½adimos el vendedor a lista de vendedores
 		ACLMessage msjRespuesta = msjRegistro.createReply();
 		if (comprador != null && !((AgenteLonja) this.myAgent).containsComprador(msjRegistro.getSender())) {
 			((AgenteLonja) this.myAgent).addComprador(msjRegistro.getSender(), comprador);
-			System.out.println( this.getAgent().getLocalName() + ": Anadido comprador " + msjRegistro.getSender().getLocalName());
+			System.out.println(
+					this.getAgent().getLocalName() + ": Anadido comprador " + msjRegistro.getSender().getLocalName());
 			msjRespuesta.setPerformative(ACLMessage.INFORM);
 			msjRespuesta.setContent("Registrado correctamente");
 		} else {
 			msjRespuesta.setPerformative(ACLMessage.FAILURE);
 			msjRespuesta.setContent("Fallo en el registro");
-			System.out.println(this.myAgent.getLocalName() + ": Enviando mensaje de fallo en el registro de comprador a "
-					+ comprador.getNombre());
+			System.out.println(this.myAgent.getLocalName()
+					+ ": Enviando mensaje de fallo en el registro de comprador a " + comprador.getNombre());
 		}
 		return msjRespuesta;
 	}

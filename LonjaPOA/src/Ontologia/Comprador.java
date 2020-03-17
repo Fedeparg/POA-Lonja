@@ -13,6 +13,7 @@ public class Comprador implements Serializable {
 	private LinkedList<Articulo> articulosComprados; // Pescadico comprao
 	private LinkedList<Articulo> pendienteRetirada;
 	private double dinero; // Dinero que lleva encima
+	private double dineroLonja; // Dinero para comprar pescaico
 
 	public Comprador(int id, String nombre, List<ArticuloCompra> lista, double oros) {
 		this.id = id;
@@ -21,6 +22,7 @@ public class Comprador implements Serializable {
 		this.dinero = oros;
 		this.articulosComprados = new LinkedList<Articulo>();
 		this.pendienteRetirada = new LinkedList<Articulo>();
+		this.dineroLonja = 0.0;
 	}
 
 	public int getId() {
@@ -61,6 +63,14 @@ public class Comprador implements Serializable {
 
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
+	}
+
+	public double getDineroLonja() {
+		return dineroLonja;
+	}
+
+	public void setDineroLonja(double dineroLonja) {
+		this.dineroLonja = dineroLonja;
 	}
 
 }

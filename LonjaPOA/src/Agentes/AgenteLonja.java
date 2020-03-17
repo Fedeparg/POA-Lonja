@@ -7,26 +7,20 @@ import java.util.LinkedList;
 import Ontologia.Articulo;
 import Ontologia.Comprador;
 import Ontologia.Vendedor;
-import Protocolos.AdmisionCompradorI;
 import Protocolos.AdmisionCompradorP;
 import Protocolos.AdmisionVendedorP;
+import Protocolos.AperturaCreditoLonja;
 import Protocolos.DepositoArticuloP;
 import jade.core.AID;
 import jade.core.Agent;
-import jade.core.behaviours.Behaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
-import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.lang.acl.UnreadableException;
 
 @SuppressWarnings("serial")
 public class AgenteLonja extends Agent {
-
-	//private LinkedList<Vendedor> vendedores;
-	//private LinkedList<Comprador> compradores;
 	
 	private HashMap<AID, Vendedor> vendedores;
 	private HashMap<AID, Comprador> compradores;
@@ -71,6 +65,10 @@ public class AgenteLonja extends Agent {
 		// Deposito de articulos
 		MessageTemplate msjDeposito = MessageTemplate.MatchConversationId("DepositoArticulo");
 		addBehaviour(new DepositoArticuloP (this, msjDeposito));
+		
+		// Apertura Credito
+		MessageTemplate msjAperturaCredito = MessageTemplate.MatchConversationId("AperturaCredito");
+		addBehaviour(new AperturaCreditoLonja(this, msjAperturaCredito));
 	}
 
 	public void addVendedor(AID AIDvendedor, Vendedor vendedor) {
@@ -96,5 +94,9 @@ public class AgenteLonja extends Agent {
 	public void addArticuloParaSubastar(Articulo articulo) {
 		articulo.setHoraRegistro(new Date());
 		this.articulosParaSubastar.add(articulo);
+	}
+	
+	public void addDineroComprador(AID aidComprador, double oros) {
+		compradores.get(aidComprador).setDineroLonja(oros);
 	}
 }

@@ -1,1 +1,1 @@
-http://172.22.76.87:7778/acc
+http://ubuntu:7778/acc

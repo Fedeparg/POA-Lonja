@@ -9,13 +9,13 @@ import jade.lang.acl.UnreadableException;
 import jade.proto.AchieveREResponder;
 
 @SuppressWarnings("serial")
-public class DepositoArticuloP extends AchieveREResponder{
+public class DepositoArticuloP extends AchieveREResponder {
 
 	public DepositoArticuloP(Agent a, MessageTemplate mt) {
 		super(a, mt);
 	}
-	
-	protected ACLMessage prepareResponse (ACLMessage msjDeposito) {
+
+	protected ACLMessage prepareResponse(ACLMessage msjDeposito) {
 		System.out.println(myAgent.getLocalName() + ": recibido mensaje de deposito de articulo");
 		Articulo articulo = null;
 		try {
@@ -38,5 +38,4 @@ public class DepositoArticuloP extends AchieveREResponder{
 
 	}
 
-	
 }
