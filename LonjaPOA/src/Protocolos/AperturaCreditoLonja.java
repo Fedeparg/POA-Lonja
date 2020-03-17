@@ -1,5 +1,7 @@
 package Protocolos;
 
+import java.io.IOException;
+
 import Agentes.AgenteLonja;
 import Ontologia.Comprador;
 import jade.core.Agent;
@@ -34,7 +36,11 @@ public class AperturaCreditoLonja extends AchieveREResponder {
 			System.out.println(this.getAgent().getLocalName() + ": Añadido " + dinero + " al comprador "
 					+ msjRegistro.getSender().getLocalName());
 			msjRespuesta.setPerformative(ACLMessage.INFORM);
-			msjRespuesta.setContent("Añadido dinero correctamente");
+			try {
+				msjRespuesta.setContentObject(dinero);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		} else {
 			msjRespuesta.setPerformative(ACLMessage.FAILURE);
 			msjRespuesta.setContent("Fallo en apertura credito");

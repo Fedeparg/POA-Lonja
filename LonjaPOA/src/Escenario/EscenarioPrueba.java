@@ -60,7 +60,7 @@ public class EscenarioPrueba {
 			Object[] argumentosComprador1 = { comprador1 };
 			AgentController agenteComprador1 = mc.createNewAgent("AgenteComprador1",
 					Agentes.AgenteComprador.class.getName(), argumentosComprador1);
-//			agenteComprador1.start();
+			agenteComprador1.start();
 			
 		} catch (Exception e) {
 			e.printStackTrace();

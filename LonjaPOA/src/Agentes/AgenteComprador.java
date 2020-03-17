@@ -79,9 +79,14 @@ public class AgenteComprador extends Agent {
 						this.getLocalName() + ": Enviada solicitud de apertura credito a lonja" + lonja.getLocalName());
 				seq.addSubBehaviour(new AperturaCreditoComprador(this, mensajeAperturaCredito));
 			}
+			addBehaviour(seq);
 
 		}
 
+	}
+
+	public void cambiarDinero(Double dinero) {
+		comprador.setDinero(comprador.getDinero() - dinero);
 	}
 
 }

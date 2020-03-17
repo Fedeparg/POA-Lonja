@@ -1,7 +1,9 @@
 package Protocolos;
 
+import Agentes.AgenteComprador;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.UnreadableException;
 import jade.proto.AchieveREInitiator;
 
 @SuppressWarnings("serial")
@@ -11,9 +13,14 @@ public class AperturaCreditoComprador extends AchieveREInitiator {
 		super(a, msg);
 	}
 
-	protected void handleInform(ACLMessage msjRegistroExisto) {
+	protected void handleInform(ACLMessage msjRegistroExito) {
 		System.out.println(this.myAgent.getLocalName() + ": Recibido mensaje de aceptacion apertura credito en  "
-				+ msjRegistroExisto.getSender().getLocalName());
+				+ msjRegistroExito.getSender().getLocalName());
+		try {
+			((AgenteComprador) this.myAgent).cambiarDinero((Double) msjRegistroExito.getContentObject());
+		} catch (UnreadableException e) {
+			e.printStackTrace();
+		}
 	}
 
 	protected void handleFailure(ACLMessage msjRegistroFallo) {
