@@ -1,20 +1,18 @@
 package Ontologia;
 
-public class ArticuloCompra {
+import jade.util.leap.Serializable;
 
-	private Pescado pescado;
+@SuppressWarnings("serial")
+public class ArticuloCompra implements Serializable {
+
+	private String pescado;
 	private double kilos;
 	
-	public ArticuloCompra(Pescado pescado, double kg) {
-		this.pescado = pescado;
-		this.kilos = kg;
-	}
-
-	public Pescado getPescado() {
+	public String getPescado() {
 		return pescado;
 	}
 
-	public void setPescado(Pescado pescado) {
+	public void setPescado(String pescado) {
 		this.pescado = pescado;
 	}
 

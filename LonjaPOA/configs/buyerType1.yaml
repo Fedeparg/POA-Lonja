@@ -1,0 +1,5 @@
+!!Ontologia.Comprador
+listaCompra:
+   - kilos: 5
+     pescado: "Boqueron"
+dinero: 1000.0

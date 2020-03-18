@@ -1,70 +1,107 @@
 package Escenario;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+
+import org.yaml.snakeyaml.Yaml;
 
 import Ontologia.*;
+import Escenario.AgentRefConfig;
+import Escenario.ScenarioConfig;
+import es.um.poa.utils.AgentLoggingHTMLFormatter;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
+import jade.util.Logger;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
 
 public class EscenarioPrueba {
 
-	public static void main(String[] args) {
-		try {
+	public static void main(String[] args) throws SecurityException, IOException {
+		if (args.length == 1) {
+			String config_file = args[0];
+			Yaml yaml = new Yaml();
+			InputStream inputStream = new FileInputStream(config_file);
+			ScenarioConfig scenario = yaml.load(inputStream);
 
-			// Obtenemos una instancia del entorno runtime de Jade
-			Runtime rt = Runtime.instance();
-			// Terminamos la m�quinq virtual si no hubiera ning�n contenedor de agentes
-			// activo
-			rt.setCloseVM(true);
-			// Lanzamos una plataforma en el puerto 8888
-			// Y creamos un profile de la plataforma a partir de la cual podemos
-			// crear contenedores
-			Profile pMain = new ProfileImpl(null, 12000, null);
-			System.out.println("Lanzamos una plataforma desde clase principal..." + pMain);
+			initLogging(scenario.getName());
 
-			// Creamos el contenedor
-			AgentContainer mc = rt.createMainContainer(pMain);
+			System.out.println(scenario);
+			try {
 
-			// Creamos un RMA (la GUI de JADE)
-			AgentController rma = mc.createNewAgent("rma", "jade.tools.rma.rma", new Object[0]);
-			rma.start();
+				// Obtenemos una instancia del entorno runtime de Jade
+				Runtime rt = Runtime.instance();
 
-			// Creamos la lonja
-			AgentController lonja = mc.createNewAgent("LonjaEscenarioPrueba", Agentes.AgenteLonja.class.getName(),
-					null);
-			lonja.start();
+				// Terminamos la máquinq virtual si no hubiera ningún contenedor de agentes
+				// activo
+				rt.setCloseVM(true);
 
-			// Creamos los vendedores
+				// Lanzamos una plataforma en el puerto 8888
+				// Y creamos un profile de la plataforma a partir de la cual podemos
+				// crear contenedores
+				Profile pMain = new ProfileImpl(null, 8888, null);
+				System.out.println("Lanzamos una plataforma desde clase principal... " + pMain);
 
-			int idArticulos = 0;
-			Vendedor vendedor1 = new Vendedor(1, "AgenteVendedor1");
-			Articulo articulo1 = new Articulo(idArticulos, Pescado.ATUN, 10, 50, vendedor1);
-			Articulo articulo2 = new Articulo(++idArticulos, Pescado.BACALAO, 10, 50, vendedor1);
-			vendedor1.addArticuloParaVender(articulo1);
-			vendedor1.addArticuloParaVender(articulo2);
-			Object[] argumentosVendedor1 = { vendedor1 };
-			AgentController agenteVendedor1 = mc.createNewAgent("AgenteVendedor1",
-					Agentes.AgenteVendedor.class.getName(), argumentosVendedor1);
-			agenteVendedor1.start();
+				// Creamos el contenedor
+				AgentContainer mc = rt.createMainContainer(pMain);
 
-			Vendedor vendedor2 = new Vendedor(2, "AgenteVendedor2");
-			Object[] argumentosVendedor2 = { vendedor2 };
-			AgentController agenteVendedor2 = mc.createNewAgent("AgenteVendedor2",
-					Agentes.AgenteVendedor.class.getName(), argumentosVendedor2);
-			agenteVendedor2.start();
+				// Creamos un RMA (la GUI de JADE)
+				System.out.println("Lanzando el agente RMA en el contenedor main ...");
+				AgentController rma = mc.createNewAgent("rma", "jade.tools.rma.rma", new Object[0]);
+				rma.start();
 
-			Comprador comprador1 = new Comprador(1, "AgenteComprador1", new LinkedList<ArticuloCompra>(), 100);
-			Object[] argumentosComprador1 = { comprador1 };
-			AgentController agenteComprador1 = mc.createNewAgent("AgenteComprador1",
-					Agentes.AgenteComprador.class.getName(), argumentosComprador1);
-			agenteComprador1.start();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
+				// INICIALIZACIÓN DE LOS AGENTES
+
+				// FishMarket
+				AgentRefConfig marketConfig = scenario.getFishMarket();
+				Object[] marketConfigArg = { marketConfig.getConfig() };
+				AgentController market = mc.createNewAgent(marketConfig.getName(),
+						Agentes.AgenteLonja.class.getName(), marketConfigArg);
+				market.start();
+
+				// Buyers
+				List<AgentRefConfig> buyers = scenario.getBuyers();
+				for (AgentRefConfig buyer : buyers) {
+					System.out.println(buyer);
+					Object[] buyerConfigArg = { buyer.getConfig() };
+					AgentController b = mc.createNewAgent(buyer.getName(),
+							Agentes.AgenteComprador.class.getName(), buyerConfigArg);
+					b.start();
+				}
+
+				// Sellers
+				List<AgentRefConfig> sellers = scenario.getSellers();
+				for (AgentRefConfig seller : sellers) {
+					System.out.println(seller);
+					Object[] buyerConfigArg = { seller.getConfig() };
+					AgentController b = mc.createNewAgent(seller.getName(),
+							Agentes.AgenteVendedor.class.getName(), buyerConfigArg);
+					b.start();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
+	}
+
+	public static void initLogging(String scenarioName) throws SecurityException, IOException {
+		LogManager lm = LogManager.getLogManager();
+
+		Logger logger = Logger.getMyLogger("es.um.poa");
+		logger.setLevel(Level.INFO);
+
+		FileHandler html_handler = new FileHandler("logs/" + scenarioName + ".html");
+		html_handler.setFormatter(new AgentLoggingHTMLFormatter());
+		logger.addHandler(html_handler);
+
+		lm.addLogger(logger);
 	}
 
 }

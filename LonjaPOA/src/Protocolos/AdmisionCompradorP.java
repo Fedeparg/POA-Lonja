@@ -38,8 +38,6 @@ public class AdmisionCompradorP extends AchieveREResponder {
 		} else {
 			msjRespuesta.setPerformative(ACLMessage.FAILURE);
 			msjRespuesta.setContent("Fallo en el registro");
-			System.out.println(this.myAgent.getLocalName()
-					+ ": Enviando mensaje de fallo en el registro de comprador a " + comprador.getNombre());
 		}
 		return msjRespuesta;
 	}

@@ -1,37 +1,16 @@
 package Ontologia;
 
 import java.util.LinkedList;
-import java.util.List;
 
 import jade.util.leap.Serializable;
 
 @SuppressWarnings("serial")
 public class Comprador implements Serializable {
-	private int id;
-	private String nombre;
 	private LinkedList<ArticuloCompra> listaCompra; // Pescadico a comprar
-	private LinkedList<Articulo> articulosComprados; // Pescadico comprao
-	private LinkedList<Articulo> pendienteRetirada;
+	private LinkedList<Articulo> articulosComprados = new LinkedList<Articulo>(); // Pescadico comprao
+	private LinkedList<Articulo> pendienteRetirada = new LinkedList<Articulo>();
 	private double dinero; // Dinero que lleva encima
-	private double dineroLonja; // Dinero para comprar pescaico
-
-	public Comprador(int id, String nombre, List<ArticuloCompra> lista, double oros) {
-		this.id = id;
-		this.nombre = nombre;
-		this.listaCompra = (LinkedList<ArticuloCompra>) lista;
-		this.dinero = oros;
-		this.articulosComprados = new LinkedList<Articulo>();
-		this.pendienteRetirada = new LinkedList<Articulo>();
-		this.dineroLonja = 0.0;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
+	private double dineroLonja = 0.0; // Dinero para comprar pescaico
 
 	public LinkedList<ArticuloCompra> getListaCompra() {
 		return listaCompra;
@@ -57,20 +36,20 @@ public class Comprador implements Serializable {
 		this.dinero = dinero;
 	}
 
-	public String getNombre() {
-		return nombre;
-	}
-
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
-
 	public double getDineroLonja() {
 		return dineroLonja;
 	}
 
 	public void setDineroLonja(double dineroLonja) {
 		this.dineroLonja = dineroLonja;
+	}
+
+	public LinkedList<Articulo> getPendienteRetirada() {
+		return pendienteRetirada;
+	}
+
+	public void setPendienteRetirada(LinkedList<Articulo> pendienteRetirada) {
+		this.pendienteRetirada = pendienteRetirada;
 	}
 
 }
