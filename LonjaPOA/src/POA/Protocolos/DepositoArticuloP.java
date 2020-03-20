@@ -1,6 +1,7 @@
 package POA.Protocolos;
 
 import POA.Agentes.AgenteLonja;
+import POA.Agentes.POAAgent;
 import POA.Ontologia.Articulo;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
@@ -16,7 +17,8 @@ public class DepositoArticuloP extends AchieveREResponder {
 	}
 
 	protected ACLMessage prepareResponse(ACLMessage msjDeposito) {
-		System.out.println(myAgent.getLocalName() + ": recibido mensaje de deposito de articulo");
+		((POAAgent) myAgent).getLogger().info("DepositoArticulo", "Recibida peticion de deposito de "
+				+ msjDeposito.getSender().getLocalName());
 		Articulo articulo = null;
 		try {
 			articulo = (Articulo) msjDeposito.getContentObject();

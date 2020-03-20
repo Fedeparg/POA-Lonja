@@ -1,5 +1,6 @@
 package POA.Protocolos;
 
+import POA.Agentes.POAAgent;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 import jade.proto.AchieveREInitiator;
@@ -12,12 +13,12 @@ public class AdmisionCompradorI extends AchieveREInitiator {
 	}
 
 	protected void handleInform(ACLMessage msjRegistroExisto) {
-		System.out.println(this.myAgent.getLocalName() + ": Recibido mensaje de aceptacion registro en  "
+		((POAAgent) myAgent).getLogger().info("AdmisionComprador", "Recibido mensaje de aceptacion registro en  "
 				+ msjRegistroExisto.getSender().getLocalName());
 	}
 
 	protected void handleFailure(ACLMessage msjRegistroFallo) {
-		System.out.println(this.myAgent.getLocalName() + ": Enviando mensaje de fallo en el registro en  "
+		((POAAgent) myAgent).getLogger().info("AdmisionComprador", "Recibido mensaje de fallo en registro en  "
 				+ msjRegistroFallo.getSender().getLocalName());
 		this.reset();
 	}

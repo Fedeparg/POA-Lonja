@@ -1,6 +1,7 @@
 package POA.Protocolos;
 
 import POA.Agentes.AgenteComprador;
+import POA.Agentes.POAAgent;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
@@ -14,8 +15,8 @@ public class AperturaCreditoComprador extends AchieveREInitiator {
 	}
 
 	protected void handleInform(ACLMessage msjRegistroExito) {
-		System.out.println(this.myAgent.getLocalName() + ": Recibido mensaje de aceptacion apertura credito en  "
-				+ msjRegistroExito.getSender().getLocalName());
+		((POAAgent) myAgent).getLogger().info("AperturaCredito",
+				"Recibido mensaje de aceptacion apertura credito en " + msjRegistroExito.getSender().getLocalName());
 		try {
 			((AgenteComprador) this.myAgent).cambiarDinero((Double) msjRegistroExito.getContentObject());
 		} catch (UnreadableException e) {
@@ -24,8 +25,8 @@ public class AperturaCreditoComprador extends AchieveREInitiator {
 	}
 
 	protected void handleFailure(ACLMessage msjRegistroFallo) {
-		System.out.println(this.myAgent.getLocalName() + ": Enviando mensaje de fallo en la apertura credito en  "
-				+ msjRegistroFallo.getSender().getLocalName());
+		((POAAgent) myAgent).getLogger().info("AperturaCredito",
+				"Recibido mensaje de fallo en apertura credito en " + msjRegistroFallo.getSender().getLocalName());
 		this.reset();
 	}
 

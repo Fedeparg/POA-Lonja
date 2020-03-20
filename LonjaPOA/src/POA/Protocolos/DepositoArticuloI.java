@@ -1,5 +1,6 @@
 package POA.Protocolos;
 
+import POA.Agentes.POAAgent;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 import jade.proto.AchieveREInitiator;
@@ -11,14 +12,14 @@ public class DepositoArticuloI extends AchieveREInitiator {
 		super(a, msg);
 	}
 
-	protected void handleInform(ACLMessage msjRegistroExisto) {
-		System.out.println(this.myAgent.getLocalName() + ": Recibido mensaje de exito en deposito articulo en "
-				+ msjRegistroExisto.getSender().getLocalName());
+	protected void handleInform(ACLMessage msjRegistroExito) {
+		((POAAgent) myAgent).getLogger().info("DepositoArticulo",
+				"Recibido mensaje de aceptacion de deposito en " + msjRegistroExito.getSender().getLocalName());
 	}
 
 	protected void handleFailure(ACLMessage msjRegistroFallo) {
-		System.out.println(this.myAgent.getLocalName() + ": Enviando mensaje de fallo en deposito de articulo en  "
-				+ msjRegistroFallo.getSender().getLocalName());
+		((POAAgent) myAgent).getLogger().info("DepositoArticulo",
+				"Recibido mensaje de fallo en deposito en " + msjRegistroFallo.getSender().getLocalName());
 		this.reset();
 	}
 

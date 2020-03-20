@@ -1,6 +1,7 @@
 package POA.Protocolos;
 
 import POA.Agentes.AgenteLonja;
+import POA.Agentes.POAAgent;
 import POA.Ontologia.Vendedor;
 import jade.core.Agent;
 import jade.domain.FIPAAgentManagement.NotUnderstoodException;
@@ -18,7 +19,7 @@ public class AdmisionVendedorP extends AchieveREResponder {
 	}
 
 	protected ACLMessage prepareResponse(ACLMessage msjRegistro) throws NotUnderstoodException, RefuseException {
-		System.out.println(this.getAgent().getLocalName() + ": Recibida peticion de registro vendedor de "
+		((POAAgent) myAgent).getLogger().info("AdmisionVendedor", "Recibida peticion de registro vendedor de "
 				+ msjRegistro.getSender().getLocalName());
 		Vendedor vendedor = null;
 		try {
@@ -31,8 +32,8 @@ public class AdmisionVendedorP extends AchieveREResponder {
 		ACLMessage msjRespuesta = msjRegistro.createReply();
 		if (vendedor != null && !((AgenteLonja) this.myAgent).containsVendedor(msjRegistro.getSender())) {
 			((AgenteLonja) this.myAgent).addVendedor(msjRegistro.getSender(), vendedor);
-			System.out.println(
-					this.getAgent().getLocalName() + ": Anadido vendedor " + msjRegistro.getSender().getLocalName());
+			((POAAgent) myAgent).getLogger().info("AdmisionVendedor", "Añadido vendedor "
+					+ msjRegistro.getSender().getLocalName());
 			msjRespuesta.setPerformative(ACLMessage.INFORM);
 			msjRespuesta.setContent("Registrado correctamente");
 		} else {

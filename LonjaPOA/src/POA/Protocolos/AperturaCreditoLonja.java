@@ -3,6 +3,7 @@ package POA.Protocolos;
 import java.io.IOException;
 
 import POA.Agentes.AgenteLonja;
+import POA.Agentes.POAAgent;
 import POA.Ontologia.Comprador;
 import jade.core.Agent;
 import jade.domain.FIPAAgentManagement.NotUnderstoodException;
@@ -20,8 +21,8 @@ public class AperturaCreditoLonja extends AchieveREResponder {
 	}
 
 	protected ACLMessage prepareResponse(ACLMessage msjRegistro) throws NotUnderstoodException, RefuseException {
-		System.out.println(this.getAgent().getLocalName() + ": Recibida peticion de apertura credito de comprador de "
-				+ msjRegistro.getSender().getLocalName());
+		((POAAgent) myAgent).getLogger().info("AperturaCredito",
+				"Recibida peticion de apertura credito de " + msjRegistro.getSender().getLocalName());
 		Double dinero = 0.0;
 		try {
 			dinero = (Double) msjRegistro.getContentObject();
@@ -33,8 +34,8 @@ public class AperturaCreditoLonja extends AchieveREResponder {
 		ACLMessage msjRespuesta = msjRegistro.createReply();
 		if (dinero != null && ((AgenteLonja) this.myAgent).containsComprador(msjRegistro.getSender())) {
 			((AgenteLonja) this.myAgent).addDineroComprador(msjRegistro.getSender(), dinero);
-			System.out.println(this.getAgent().getLocalName() + ": Añadido " + dinero + " al comprador "
-					+ msjRegistro.getSender().getLocalName());
+			((POAAgent) myAgent).getLogger().info("AperturaCredito",
+					"Añadido " + dinero + "al comprador " + msjRegistro.getSender().getLocalName());
 			msjRespuesta.setPerformative(ACLMessage.INFORM);
 			try {
 				msjRespuesta.setContentObject(dinero);

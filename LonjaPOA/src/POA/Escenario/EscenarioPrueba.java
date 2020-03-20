@@ -3,7 +3,6 @@ package POA.Escenario;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -13,7 +12,6 @@ import org.yaml.snakeyaml.Yaml;
 
 import POA.Escenario.AgentRefConfig;
 import POA.Escenario.ScenarioConfig;
-import POA.Ontologia.*;
 import POA.utils.AgentLoggingHTMLFormatter;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
