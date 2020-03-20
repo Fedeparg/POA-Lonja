@@ -1,6 +1,6 @@
-package Agentes;
+package POA.Agentes;
 
-import es.um.poa.utils.AgentLoggerWrapper;
+import POA.utils.AgentLoggerWrapper;
 import jade.core.Agent;
 
 public class POAAgent extends Agent {

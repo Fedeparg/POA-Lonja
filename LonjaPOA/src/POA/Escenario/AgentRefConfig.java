@@ -1,4 +1,4 @@
-package Escenario;
+package POA.Escenario;
 
 public class AgentRefConfig {
 	private String name;

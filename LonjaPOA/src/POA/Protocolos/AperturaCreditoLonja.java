@@ -1,9 +1,9 @@
-package Protocolos;
+package POA.Protocolos;
 
 import java.io.IOException;
 
-import Agentes.AgenteLonja;
-import Ontologia.Comprador;
+import POA.Agentes.AgenteLonja;
+import POA.Ontologia.Comprador;
 import jade.core.Agent;
 import jade.domain.FIPAAgentManagement.NotUnderstoodException;
 import jade.domain.FIPAAgentManagement.RefuseException;

@@ -1,4 +1,4 @@
-!!Ontologia.Vendedor
+!!POA.Ontologia.Vendedor
 productosParaVender:
   - kilos: 10.0
     pescado: "sardina"

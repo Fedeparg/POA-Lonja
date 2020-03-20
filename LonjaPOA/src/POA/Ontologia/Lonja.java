@@ -1,4 +1,4 @@
-package Ontologia;
+package POA.Ontologia;
 
 import java.util.HashMap;
 import java.util.LinkedList;

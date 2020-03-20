@@ -1,4 +1,4 @@
-package es.um.poa.utils;
+package POA.utils;
 
 import java.util.HashMap;
 import java.util.Map;

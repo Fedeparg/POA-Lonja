@@ -1,4 +1,4 @@
-package Escenario;
+package POA.Escenario;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -11,10 +11,10 @@ import java.util.logging.LogManager;
 
 import org.yaml.snakeyaml.Yaml;
 
-import Ontologia.*;
-import Escenario.AgentRefConfig;
-import Escenario.ScenarioConfig;
-import es.um.poa.utils.AgentLoggingHTMLFormatter;
+import POA.Escenario.AgentRefConfig;
+import POA.Escenario.ScenarioConfig;
+import POA.Ontologia.*;
+import POA.utils.AgentLoggingHTMLFormatter;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
@@ -63,7 +63,7 @@ public class EscenarioPrueba {
 				AgentRefConfig marketConfig = scenario.getFishMarket();
 				Object[] marketConfigArg = { marketConfig.getConfig() };
 				AgentController market = mc.createNewAgent(marketConfig.getName(),
-						Agentes.AgenteLonja.class.getName(), marketConfigArg);
+						POA.Agentes.AgenteLonja.class.getName(), marketConfigArg);
 				market.start();
 
 				// Buyers
@@ -72,7 +72,7 @@ public class EscenarioPrueba {
 					System.out.println(buyer);
 					Object[] buyerConfigArg = { buyer.getConfig() };
 					AgentController b = mc.createNewAgent(buyer.getName(),
-							Agentes.AgenteComprador.class.getName(), buyerConfigArg);
+							POA.Agentes.AgenteComprador.class.getName(), buyerConfigArg);
 					b.start();
 				}
 
@@ -82,7 +82,7 @@ public class EscenarioPrueba {
 					System.out.println(seller);
 					Object[] buyerConfigArg = { seller.getConfig() };
 					AgentController b = mc.createNewAgent(seller.getName(),
-							Agentes.AgenteVendedor.class.getName(), buyerConfigArg);
+							POA.Agentes.AgenteVendedor.class.getName(), buyerConfigArg);
 					b.start();
 				}
 			} catch (Exception e) {
@@ -94,7 +94,7 @@ public class EscenarioPrueba {
 	public static void initLogging(String scenarioName) throws SecurityException, IOException {
 		LogManager lm = LogManager.getLogManager();
 
-		Logger logger = Logger.getMyLogger("es.um.poa");
+		Logger logger = Logger.getMyLogger("POA");
 		logger.setLevel(Level.INFO);
 
 		FileHandler html_handler = new FileHandler("logs/" + scenarioName + ".html");

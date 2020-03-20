@@ -1,4 +1,4 @@
-package Agentes;
+package POA.Agentes;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -7,10 +7,9 @@ import java.io.InputStream;
 
 import org.yaml.snakeyaml.Yaml;
 
-import Ontologia.Articulo;
-import Ontologia.Vendedor;
-import Protocolos.AdmisionVendedorI;
-import Protocolos.DepositoArticuloI;
+import POA.Ontologia.Comprador;
+import POA.Protocolos.AdmisionCompradorI;
+import POA.Protocolos.AperturaCreditoComprador;
 import jade.core.AID;
 import jade.core.behaviours.SequentialBehaviour;
 import jade.domain.DFService;
@@ -21,12 +20,14 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 
 @SuppressWarnings("serial")
-public class AgenteVendedor extends POAAgent {
+public class AgenteComprador extends POAAgent {
 
 	private AID[] lonjas;
-	private Vendedor config;
+	private Comprador config;
+	private AID lonja;
 
 	public void setup() {
+
 		super.setup();
 
 		Object[] args = getArguments();
@@ -52,46 +53,39 @@ public class AgenteVendedor extends POAAgent {
 						e.printStackTrace();
 					}
 				} while (lonjas.length == 0);
+				lonja = lonjas[0];
 
-				// Creamos un comportamiento secuencial para el registro y el deposito
 				SequentialBehaviour seq = new SequentialBehaviour();
+				// PROTOCOLO REGISTRO
+				ACLMessage mensajeRegistro = new ACLMessage(ACLMessage.REQUEST);
+				mensajeRegistro.addReceiver(lonja);
+				try {
+					mensajeRegistro.setContentObject(config);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				mensajeRegistro.setConversationId("RegistroComprador");
+				mensajeRegistro.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
+				System.out.println(this.getLocalName() + ": Enviando peticion de registro a lonja "
+						+ lonja.getLocalName() + " como comprador");
+				seq.addSubBehaviour(new AdmisionCompradorI(this, mensajeRegistro));
 
-				// Enviamos el mensaje de registro
-				for (AID lonja : lonjas) {
-					ACLMessage mensajeRegistro = new ACLMessage(ACLMessage.REQUEST);
-					mensajeRegistro.addReceiver(lonja);
+				// PROTOCOLO APERTURA CREDITO
+				if (config.getDinero() > 0) {
+					ACLMessage mensajeAperturaCredito = new ACLMessage(ACLMessage.REQUEST);
+					mensajeAperturaCredito.addReceiver(lonja);
 					try {
-						mensajeRegistro.setContentObject(config);
+						mensajeAperturaCredito.setContentObject(config.getDinero());
 					} catch (IOException e) {
-						System.out.println(this.getLocalName() + ": Fallo al crear el mensaje de registro");
 						e.printStackTrace();
 					}
-					mensajeRegistro.setConversationId("RegistroVendedor");
-					mensajeRegistro.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
-					System.out.println(
-							this.getLocalName() + ": Enviando peticion de registro a lonja " + lonja.getLocalName());
-					seq.addSubBehaviour(new AdmisionVendedorI(this, mensajeRegistro));
-					// addBehaviour(new AdmisionVendedorI(this, mensajeRegistro));
+					mensajeAperturaCredito.setConversationId("AperturaCredito");
+					mensajeAperturaCredito.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
+					System.out.println(this.getLocalName() + ": Enviada solicitud de apertura credito a lonja"
+							+ lonja.getLocalName());
+					seq.addSubBehaviour(new AperturaCreditoComprador(this, mensajeAperturaCredito));
 				}
-
-				// Enviamos los mensajes para depositar articulos en la lonja
-				for (Articulo articulo : this.config.getProductosParaVender()) {
-					ACLMessage mensajeDeposito = new ACLMessage(ACLMessage.REQUEST);
-					mensajeDeposito.addReceiver(lonjas[0]);
-					try {
-						mensajeDeposito.setContentObject(articulo);
-					} catch (IOException e) {
-						System.out.println(this.getLocalName() + ": Fallo al crear el mensaje de deposito de articulo");
-						e.printStackTrace();
-					}
-					mensajeDeposito.setConversationId("DepositoArticulo");
-					mensajeDeposito.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
-					System.out.println(this.getLocalName() + ": Enviando peticion de deposito de articulo");
-					seq.addSubBehaviour(new DepositoArticuloI(this, mensajeDeposito));
-				}
-
 				addBehaviour(seq);
-
 			} else {
 				doDelete();
 			}
@@ -102,8 +96,8 @@ public class AgenteVendedor extends POAAgent {
 
 	}
 
-	private Vendedor initAgentFromConfigFile(String fileName) {
-		Vendedor config = null;
+	private Comprador initAgentFromConfigFile(String fileName) {
+		Comprador config = null;
 		try {
 			Yaml yaml = new Yaml();
 			InputStream inputStream;
@@ -115,4 +109,9 @@ public class AgenteVendedor extends POAAgent {
 		}
 		return config;
 	}
+
+	public void cambiarDinero(Double dinero) {
+		config.setDinero(config.getDinero() - dinero);
+	}
+
 }

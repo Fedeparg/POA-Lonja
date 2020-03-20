@@ -1,7 +1,7 @@
-package Protocolos;
+package POA.Protocolos;
 
-import Agentes.AgenteLonja;
-import Ontologia.Vendedor;
+import POA.Agentes.AgenteLonja;
+import POA.Ontologia.Comprador;
 import jade.core.Agent;
 import jade.domain.FIPAAgentManagement.NotUnderstoodException;
 import jade.domain.FIPAAgentManagement.RefuseException;
@@ -11,28 +11,28 @@ import jade.lang.acl.UnreadableException;
 import jade.proto.AchieveREResponder;
 
 @SuppressWarnings("serial")
-public class AdmisionVendedorP extends AchieveREResponder {
+public class AdmisionCompradorP extends AchieveREResponder {
 
-	public AdmisionVendedorP(Agent a, MessageTemplate mt) {
+	public AdmisionCompradorP(Agent a, MessageTemplate mt) {
 		super(a, mt);
 	}
 
 	protected ACLMessage prepareResponse(ACLMessage msjRegistro) throws NotUnderstoodException, RefuseException {
-		System.out.println(this.getAgent().getLocalName() + ": Recibida peticion de registro vendedor de "
+		System.out.println(this.getAgent().getLocalName() + ": Recibida peticion de registro comprador de "
 				+ msjRegistro.getSender().getLocalName());
-		Vendedor vendedor = null;
+		Comprador comprador = null;
 		try {
-			vendedor = (Vendedor) msjRegistro.getContentObject();
+			comprador = (Comprador) msjRegistro.getContentObject();
 		} catch (UnreadableException e) {
 			System.out.println("Fallo al sacar el vendedor del mensaje de registro");
 			e.printStackTrace();
 		}
-		// A�adimos el vendedor a lista de vendedores y enviamos la respuesta
+		// A�adimos el vendedor a lista de vendedores
 		ACLMessage msjRespuesta = msjRegistro.createReply();
-		if (vendedor != null && !((AgenteLonja) this.myAgent).containsVendedor(msjRegistro.getSender())) {
-			((AgenteLonja) this.myAgent).addVendedor(msjRegistro.getSender(), vendedor);
+		if (comprador != null && !((AgenteLonja) this.myAgent).containsComprador(msjRegistro.getSender())) {
+			((AgenteLonja) this.myAgent).addComprador(msjRegistro.getSender(), comprador);
 			System.out.println(
-					this.getAgent().getLocalName() + ": Anadido vendedor " + msjRegistro.getSender().getLocalName());
+					this.getAgent().getLocalName() + ": Anadido comprador " + msjRegistro.getSender().getLocalName());
 			msjRespuesta.setPerformative(ACLMessage.INFORM);
 			msjRespuesta.setContent("Registrado correctamente");
 		} else {

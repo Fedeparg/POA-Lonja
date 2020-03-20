@@ -1,4 +1,4 @@
-!!Ontologia.Comprador
+!!POA.Ontologia.Comprador
 listaCompra:
    - kilos: 5
      pescado: "Boqueron"

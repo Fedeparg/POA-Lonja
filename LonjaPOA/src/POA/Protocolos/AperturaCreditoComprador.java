@@ -1,6 +1,6 @@
-package Protocolos;
+package POA.Protocolos;
 
-import Agentes.AgenteComprador;
+import POA.Agentes.AgenteComprador;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;

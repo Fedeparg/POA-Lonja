@@ -1,4 +1,4 @@
-package Escenario;
+package POA.Escenario;
 
 import java.util.List;
 

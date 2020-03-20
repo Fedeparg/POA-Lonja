@@ -1,4 +1,4 @@
-package Agentes;
+package POA.Agentes;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -6,14 +6,14 @@ import java.io.InputStream;
 import java.util.Date;
 import org.yaml.snakeyaml.Yaml;
 
-import Ontologia.Articulo;
-import Ontologia.Comprador;
-import Ontologia.Lonja;
-import Ontologia.Vendedor;
-import Protocolos.AdmisionCompradorP;
-import Protocolos.AdmisionVendedorP;
-import Protocolos.AperturaCreditoLonja;
-import Protocolos.DepositoArticuloP;
+import POA.Ontologia.Articulo;
+import POA.Ontologia.Comprador;
+import POA.Ontologia.Lonja;
+import POA.Ontologia.Vendedor;
+import POA.Protocolos.AdmisionCompradorP;
+import POA.Protocolos.AdmisionVendedorP;
+import POA.Protocolos.AperturaCreditoLonja;
+import POA.Protocolos.DepositoArticuloP;
 import jade.core.AID;
 import jade.domain.DFService;
 import jade.domain.FIPAException;

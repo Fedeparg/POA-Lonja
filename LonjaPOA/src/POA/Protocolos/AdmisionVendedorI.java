@@ -1,13 +1,13 @@
-package Protocolos;
+package POA.Protocolos;
 
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 import jade.proto.AchieveREInitiator;
 
 @SuppressWarnings("serial")
-public class AdmisionCompradorI extends AchieveREInitiator {
+public class AdmisionVendedorI extends AchieveREInitiator {
 
-	public AdmisionCompradorI(Agent a, ACLMessage msg) {
+	public AdmisionVendedorI(Agent a, ACLMessage msg) {
 		super(a, msg);
 	}
 
@@ -19,7 +19,6 @@ public class AdmisionCompradorI extends AchieveREInitiator {
 	protected void handleFailure(ACLMessage msjRegistroFallo) {
 		System.out.println(this.myAgent.getLocalName() + ": Enviando mensaje de fallo en el registro en  "
 				+ msjRegistroFallo.getSender().getLocalName());
-		this.reset();
 	}
 
 }

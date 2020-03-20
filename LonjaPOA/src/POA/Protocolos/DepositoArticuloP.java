@@ -1,7 +1,7 @@
-package Protocolos;
+package POA.Protocolos;
 
-import Agentes.AgenteLonja;
-import Ontologia.Articulo;
+import POA.Agentes.AgenteLonja;
+import POA.Ontologia.Articulo;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
