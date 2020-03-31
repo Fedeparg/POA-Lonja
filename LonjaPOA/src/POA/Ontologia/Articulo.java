@@ -9,9 +9,8 @@ public class Articulo implements Serializable {
 
 	private String pescado;
 	private double kilos;
-	private double precioSalida;
+	private double precio;
 	private double precioReserva;
-	private double precioFinal;
 	private Date horaRegistro;
 	private Date horaVenta;
 
@@ -31,12 +30,12 @@ public class Articulo implements Serializable {
 		this.kilos = kilos;
 	}
 
-	public double getPrecioSalida() {
-		return precioSalida;
+	public double getPrecio() {
+		return precio;
 	}
 
-	public void setPrecioSalida(double precioSalida) {
-		this.precioSalida = precioSalida;
+	public void setPrecio(double precioSalida) {
+		this.precio = precioSalida;
 	}
 
 	public double getPrecioReserva() {
@@ -45,14 +44,6 @@ public class Articulo implements Serializable {
 
 	public void setPrecioReserva(double precioReserva) {
 		this.precioReserva = precioReserva;
-	}
-
-	public double getPrecioFinal() {
-		return precioFinal;
-	}
-
-	public void setPrecioFinal(double precioFinal) {
-		this.precioFinal = precioFinal;
 	}
 
 	public Date getHoraRegistro() {
@@ -70,5 +61,6 @@ public class Articulo implements Serializable {
 	public void setHoraVenta(Date horaVenta) {
 		this.horaVenta = horaVenta;
 	}
+	
 
 }

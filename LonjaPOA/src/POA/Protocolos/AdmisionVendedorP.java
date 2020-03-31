@@ -33,7 +33,7 @@ public class AdmisionVendedorP extends AchieveREResponder {
 		if (vendedor != null && !((AgenteLonja) this.myAgent).containsVendedor(msjRegistro.getSender())) {
 			((AgenteLonja) this.myAgent).addVendedor(msjRegistro.getSender(), vendedor);
 			((POAAgent) myAgent).getLogger().info("AdmisionVendedor", "Añadido vendedor "
-					+ msjRegistro.getSender().getLocalName());
+					+ msjRegistro.getSender().getLocalName());	
 			msjRespuesta.setPerformative(ACLMessage.INFORM);
 			msjRespuesta.setContent("Registrado correctamente");
 		} else {

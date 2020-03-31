@@ -7,9 +7,12 @@ import java.io.InputStream;
 
 import org.yaml.snakeyaml.Yaml;
 
+import POA.Ontologia.ArticuloCompra;
 import POA.Ontologia.Comprador;
 import POA.Protocolos.AdmisionCompradorI;
 import POA.Protocolos.AperturaCreditoComprador;
+import POA.Protocolos.DepositoArticuloP;
+import POA.Protocolos.SubastaComprador;
 import jade.core.AID;
 import jade.core.behaviours.SequentialBehaviour;
 import jade.domain.DFService;
@@ -18,6 +21,7 @@ import jade.domain.FIPANames;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 
 @SuppressWarnings("serial")
 public class AgenteComprador extends POAAgent {
@@ -86,6 +90,11 @@ public class AgenteComprador extends POAAgent {
 					seq.addSubBehaviour(new AperturaCreditoComprador(this, mensajeAperturaCredito));
 				}
 				addBehaviour(seq);
+
+				// PROTOCOLO SUBASTA
+
+				MessageTemplate msjPuja = MessageTemplate.MatchConversationId("Subasta");
+				addBehaviour(new SubastaComprador(this, msjPuja));
 			} else {
 				doDelete();
 			}
@@ -113,5 +122,15 @@ public class AgenteComprador extends POAAgent {
 	public void cambiarDinero(Double dinero) {
 		config.setDinero(config.getDinero() - dinero);
 	}
+
+	public boolean interesaPescado(String pescado, double precio) {
+		for (ArticuloCompra articuloCompra : config.getListaCompra()) {
+			if (articuloCompra.getPescado().equals(pescado) && precio <= articuloCompra.getPrecioDispuesto()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 
 }

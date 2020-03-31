@@ -2,6 +2,7 @@ package POA.Agentes;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import org.yaml.snakeyaml.Yaml;
@@ -14,12 +15,16 @@ import POA.Protocolos.AdmisionCompradorP;
 import POA.Protocolos.AdmisionVendedorP;
 import POA.Protocolos.AperturaCreditoLonja;
 import POA.Protocolos.DepositoArticuloP;
+import POA.Protocolos.SubastaLonja;
 import jade.core.AID;
+import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
+import jade.domain.FIPANames;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.MessageTemplate;
+import jade.lang.acl.ACLMessage;
 
 @SuppressWarnings("serial")
 public class AgenteLonja extends POAAgent {
@@ -62,6 +67,27 @@ public class AgenteLonja extends POAAgent {
 				// Apertura Credito
 				MessageTemplate msjAperturaCredito = MessageTemplate.MatchConversationId("AperturaCredito");
 				addBehaviour(new AperturaCreditoLonja(this, msjAperturaCredito));
+
+				// Vendemos cosas
+				addBehaviour(new CyclicBehaviour() {
+					@Override
+					public void action() {
+						ACLMessage msjVendoPescado = new ACLMessage(ACLMessage.CFP);
+						for (AID aidComprador : config.getAIDCompradores()) {
+							msjVendoPescado.addReceiver(aidComprador);
+						}
+						Articulo articuloIteracion = config.getArticulosParaSubastar().getFirst();
+						try {
+							msjVendoPescado.setContentObject(articuloIteracion);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						msjVendoPescado.setConversationId("Subasta");
+						msjVendoPescado.setProtocol(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET);
+						msjVendoPescado.setReplyByDate(new Date(System.currentTimeMillis()+5000));
+						myAgent.addBehaviour(new SubastaLonja(myAgent, msjVendoPescado, articuloIteracion));
+					}
+				});
 			}
 		} else {
 			this.getLogger().info("ERROR", "Requiere fichero de cofiguración.");
@@ -111,5 +137,22 @@ public class AgenteLonja extends POAAgent {
 
 	public void addDineroComprador(AID aidComprador, double oros) {
 		config.getCompradores().get(aidComprador).setDineroLonja(oros);
+	}
+	
+	public void articuloVendido(Articulo articulo) {
+		articulo.setHoraVenta(new Date());
+		config.getArticulosParaSubastar().remove(articulo);
+		config.getArticulosCompradosNoPagados().add(articulo);
+	}
+	
+	public boolean reducirPrecio(Articulo articulo) {
+		articulo.setPrecio(articulo.getPrecio() - config.getDecrementoPrecio());
+		if (articulo.getPrecio() < articulo.getPrecioReserva())
+			return false;
+		return true;
+	}
+	
+	public boolean suficienteDinero(AID comprador, double precio) {
+		return config.getCompradores().get(comprador).getDineroLonja() > precio;
 	}
 }

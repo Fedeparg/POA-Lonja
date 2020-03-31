@@ -52,4 +52,4 @@ public class Comprador implements Serializable {
 		this.pendienteRetirada = pendienteRetirada;
 	}
 
-}
+}	

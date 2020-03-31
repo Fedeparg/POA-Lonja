@@ -2,6 +2,7 @@ package POA.Ontologia;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Set;
 
 import jade.core.AID;
 
@@ -12,9 +13,8 @@ public class Lonja {
 	private LinkedList<Articulo> articulosParaSubastar = new LinkedList<Articulo>();
 	private LinkedList<Articulo> articulosCompradosNoPagados = new LinkedList<Articulo>();
 	private LinkedList<Articulo> articulosImposiblesDeVender = new LinkedList<Articulo>();
-	private int precioMinimo;
+	private int decrementoPrecio;
 
-		
 	public HashMap<AID, Vendedor> getVendedores() {
 		return vendedores;
 	}
@@ -55,11 +55,19 @@ public class Lonja {
 		this.articulosImposiblesDeVender = articulosImposiblesDeVender;
 	}
 
-	public int getPrecioMinimo() {
-		return precioMinimo;
+	public int getDecrementoPrecio() {
+		return decrementoPrecio;
 	}
 
-	public void setPrecioMinimo(int precioMinimo) {
-		this.precioMinimo = precioMinimo;
+	public void setDecrementoPrecio(int decrementoPrecio) {
+		this.decrementoPrecio = decrementoPrecio;
+	}
+
+	public Set<AID> getAIDVendedores() {
+		return this.vendedores.keySet();
+	}
+
+	public Set<AID> getAIDCompradores() {
+		return this.compradores.keySet();
 	}
 }
