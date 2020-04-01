@@ -12,6 +12,7 @@ import jade.proto.ContractNetResponder;
 import java.io.IOException;
 
 import POA.Agentes.AgenteComprador;
+import POA.Agentes.POAAgent;
 import POA.Ontologia.Articulo;
 
 @SuppressWarnings("serial")
@@ -22,6 +23,7 @@ public class SubastaComprador extends ContractNetResponder {
 	}
 
 	protected ACLMessage handleCfp(ACLMessage cfp) throws RefuseException, FailureException, NotUnderstoodException {
+		((POAAgent) myAgent).getLogger().info("Subasta", "Recibida oferta de compra");
 		String pescadito = null;
 		double precio = 0;
 		try {
@@ -33,6 +35,7 @@ public class SubastaComprador extends ContractNetResponder {
 		// Comprobar que el pescado interesa
 		if (((AgenteComprador) myAgent).interesaPescado(pescadito, precio)) {
 			ACLMessage puja = cfp.createReply();
+			puja.setPerformative(ACLMessage.PROPOSE);
 			try {
 				puja.setContentObject(cfp.getContentObject());
 			} catch (IOException | UnreadableException e) {

@@ -31,7 +31,7 @@ public class AdmisionCompradorP extends AchieveREResponder {
 		// A�adimos el vendedor a lista de vendedores
 		ACLMessage msjRespuesta = msjRegistro.createReply();
 		if (comprador != null && !((AgenteLonja) this.myAgent).containsComprador(msjRegistro.getSender())) {
-			((AgenteLonja) this.myAgent).addComprador(msjRegistro.getSender(), comprador);
+			((AgenteLonja) this.myAgent).addComprador(msjRegistro.getSender());
 			
 			((POAAgent) myAgent).getLogger().info("AdmisionComprador",
 					"Anadido comprador " + msjRegistro.getSender().getLocalName());

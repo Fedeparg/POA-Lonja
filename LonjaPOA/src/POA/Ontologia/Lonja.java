@@ -1,57 +1,73 @@
 package POA.Ontologia;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Set;
 
 import jade.core.AID;
+import jade.lang.acl.ACLMessage;
 
 public class Lonja {
 
-	private HashMap<AID, Vendedor> vendedores = new HashMap<AID, Vendedor>();
-	private HashMap<AID, Comprador> compradores = new HashMap<AID, Comprador>();
-	private LinkedList<Articulo> articulosParaSubastar = new LinkedList<Articulo>();
-	private LinkedList<Articulo> articulosCompradosNoPagados = new LinkedList<Articulo>();
-	private LinkedList<Articulo> articulosImposiblesDeVender = new LinkedList<Articulo>();
+	private LinkedList<AID> vendedores = new LinkedList<AID>();
+	private HashMap<AID, Double> dineroCompradores = new HashMap<AID, Double>();
+	private HashMap<Articulo, AID> articulosParaSubastar = new HashMap<Articulo, AID>();
+	private HashMap<Articulo, AID> articulosCompradosNoPagados = new HashMap<Articulo, AID>();
+	private HashMap<Articulo, AID> articulosImposiblesDeVender = new HashMap<Articulo, AID>();
 	private int decrementoPrecio;
 
-	public HashMap<AID, Vendedor> getVendedores() {
+	public LinkedList<AID> getVendedores() {
 		return vendedores;
 	}
 
-	public void setVendedores(HashMap<AID, Vendedor> vendedores) {
+	public void setVendedores(LinkedList<AID> vendedores) {
 		this.vendedores = vendedores;
 	}
 
-	public HashMap<AID, Comprador> getCompradores() {
-		return compradores;
+	public LinkedList<AID> getCompradores() {
+		return new LinkedList<AID>(dineroCompradores.keySet());
 	}
 
-	public void setCompradores(HashMap<AID, Comprador> compradores) {
-		this.compradores = compradores;
+	public Double getDineroComprador(AID comprador) {
+		return dineroCompradores.get(comprador);
+	}
+
+	public void setDineroComprador(AID comprador, Double dinero) {
+		this.dineroCompradores.put(comprador, dinero);
 	}
 
 	public LinkedList<Articulo> getArticulosParaSubastar() {
-		return articulosParaSubastar;
+		LinkedList<Articulo> articulos = new LinkedList<Articulo>(articulosParaSubastar.keySet());
+		articulos.sort(new Comparator<Articulo>() {
+			@Override
+			public int compare(Articulo arg0, Articulo arg1) {
+				return arg0.getHoraRegistro().compareTo(arg1.getHoraRegistro());
+			}
+		});
+		return articulos;
 	}
 
-	public void setArticulosParaSubastar(LinkedList<Articulo> articulosParaSubastar) {
+	public void setArticulosParaSubastar(HashMap<Articulo, AID> articulosParaSubastar) {
 		this.articulosParaSubastar = articulosParaSubastar;
 	}
 
-	public LinkedList<Articulo> getArticulosCompradosNoPagados() {
-		return articulosCompradosNoPagados;
+	public void addArticuloParaSubastar(Articulo articulo, AID vendedor) {
+		articulosParaSubastar.put(articulo, vendedor);
 	}
 
-	public void setArticulosCompradosNoPagados(LinkedList<Articulo> articulosCompradosNoPagados) {
+	public LinkedList<Articulo> getArticulosCompradosNoPagados() {
+		return new LinkedList<Articulo>(articulosCompradosNoPagados.keySet());
+	}
+
+	public void setArticulosCompradosNoPagados(HashMap<Articulo, AID> articulosCompradosNoPagados) {
 		this.articulosCompradosNoPagados = articulosCompradosNoPagados;
 	}
 
 	public LinkedList<Articulo> getArticulosImposiblesDeVender() {
-		return articulosImposiblesDeVender;
+		return new LinkedList<Articulo>(articulosImposiblesDeVender.keySet());
 	}
 
-	public void setArticulosImposiblesDeVender(LinkedList<Articulo> articulosImposiblesDeVender) {
+	public void setArticulosImposiblesDeVender(HashMap<Articulo, AID> articulosImposiblesDeVender) {
 		this.articulosImposiblesDeVender = articulosImposiblesDeVender;
 	}
 
@@ -63,11 +79,10 @@ public class Lonja {
 		this.decrementoPrecio = decrementoPrecio;
 	}
 
-	public Set<AID> getAIDVendedores() {
-		return this.vendedores.keySet();
+	public void articuloVendido(Articulo articulo) {
+		AID vendedor = articulosParaSubastar.get(articulo);
+		articulosParaSubastar.remove(articulo);
+		articulosCompradosNoPagados.put(articulo, vendedor);
 	}
 
-	public Set<AID> getAIDCompradores() {
-		return this.compradores.keySet();
-	}
 }

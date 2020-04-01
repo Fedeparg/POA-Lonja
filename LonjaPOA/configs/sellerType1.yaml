@@ -2,4 +2,5 @@
 productosParaVender:
   - kilos: 10.0
     pescado: "sardina"
-    precioSalida: 100.0
+    precio: 100.0
+    precioReserva: 10.0

@@ -44,7 +44,7 @@ public class EscenarioPrueba {
 				// Lanzamos una plataforma en el puerto 8888
 				// Y creamos un profile de la plataforma a partir de la cual podemos
 				// crear contenedores
-				Profile pMain = new ProfileImpl(null, 8888, null);
+				Profile pMain = new ProfileImpl(null, 10000, null);
 				System.out.println("Lanzamos una plataforma desde clase principal... " + pMain);
 
 				// Creamos el contenedor

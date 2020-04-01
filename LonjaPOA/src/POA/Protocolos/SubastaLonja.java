@@ -4,25 +4,27 @@ import java.util.Comparator;
 import java.util.Vector;
 
 import POA.Agentes.AgenteLonja;
+import POA.Agentes.POAAgent;
 import POA.Ontologia.Articulo;
-import jade.core.AID;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.UnreadableException;
 import jade.proto.ContractNetInitiator;
 
 @SuppressWarnings("serial")
 public class SubastaLonja extends ContractNetInitiator {
 
 	private Articulo articuloActual;
+	private ACLMessage cfp;
 
 	public SubastaLonja(Agent a, ACLMessage cfp, Articulo articuloActual) {
 		super(a, cfp);
+		this.cfp = cfp;
 		this.articuloActual = articuloActual;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void handleAllResponses(Vector respuestas, Vector aceptaciones) {
+		((POAAgent) myAgent).getLogger().info("Subasta", "Recibidas " + respuestas.size() + " peticiones de compra");
 		if (respuestas.size() > 0) {
 
 			// Ordenamos las respuestas
@@ -35,35 +37,36 @@ public class SubastaLonja extends ContractNetInitiator {
 						return 1;
 				}
 			});
+			boolean articuloAdjudicado = false;
+			for (int i = 0; i < respuestas.size(); i++) {
 
-			ACLMessage respuesta = (ACLMessage) respuestas.get(0);
-			AID comprador = respuesta.getSender();
-			Articulo articulo = null;
-			try {
-				articulo = (Articulo) respuesta.getContentObject();
-			} catch (UnreadableException e) {
-				e.printStackTrace();
-			}
-			int i = 1;
-			while (!((AgenteLonja) myAgent).suficienteDinero(comprador, articulo.getPrecio())) {
-				comprador = ((ACLMessage) respuestas.get(i)).getSender();
-				i = i++;
-			}
-			ACLMessage msjRespuesta = respuesta.createReply();
-			msjRespuesta.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
-			aceptaciones.add(msjRespuesta);
-			for (int j = 0; j < respuestas.size(); j++) {
-				if (i != j++) {
-					ACLMessage msjRespuestaMala = ((ACLMessage) respuestas.get(j)).createReply();
-					msjRespuestaMala.setPerformative(ACLMessage.REJECT_PROPOSAL);
-					aceptaciones.add(msjRespuestaMala);
+				ACLMessage respuesta = (ACLMessage) respuestas.get(i);
+				ACLMessage msjRespuesta = ((ACLMessage) respuestas.get(i)).createReply();
+				if (!articuloAdjudicado && ((AgenteLonja) myAgent).suficienteDinero(respuesta.getSender(),
+						articuloActual.getPrecio())) {
+					msjRespuesta.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
+					((AgenteLonja) myAgent).articuloVendido(articuloActual, respuesta.getSender());
+					articuloAdjudicado = true;
+					((AgenteLonja) myAgent).setSubastaEnMarcha(false);
+					((POAAgent) myAgent).getLogger().info("Subasta", "Vendido el articulo " + articuloActual);
+				} else {
+					msjRespuesta.setPerformative(ACLMessage.REJECT_PROPOSAL);
 				}
+				aceptaciones.add(msjRespuesta);
 			}
+			if (!articuloAdjudicado) {
+				((AgenteLonja) myAgent).reducirPrecio(articuloActual);
+				((POAAgent) myAgent).getLogger().info("Subasta", "Reintentando subasta de articulo" + articuloActual
+						+ " con precio " + articuloActual.getPrecio());
+				((AgenteLonja) myAgent).setSubastaEnMarcha(false);
 
-			((AgenteLonja) myAgent).articuloVendido(articulo);
+			}
 		} else {
 			((AgenteLonja) myAgent).reducirPrecio(articuloActual);
+			((POAAgent) myAgent).getLogger().info("Subasta",
+					"Reintentando subasta de articulo" + articuloActual + " con precio " + articuloActual.getPrecio());
+			((AgenteLonja) myAgent).setSubastaEnMarcha(false);
 		}
 	}
-	
+
 }

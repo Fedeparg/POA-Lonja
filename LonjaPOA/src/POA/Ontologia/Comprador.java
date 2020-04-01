@@ -10,7 +10,6 @@ public class Comprador implements Serializable {
 	private LinkedList<Articulo> articulosComprados = new LinkedList<Articulo>(); // Pescadico comprao
 	private LinkedList<Articulo> pendienteRetirada = new LinkedList<Articulo>();
 	private double dinero; // Dinero que lleva encima
-	private double dineroLonja = 0.0; // Dinero para comprar pescaico
 
 	public LinkedList<ArticuloCompra> getListaCompra() {
 		return listaCompra;
@@ -36,14 +35,6 @@ public class Comprador implements Serializable {
 		this.dinero = dinero;
 	}
 
-	public double getDineroLonja() {
-		return dineroLonja;
-	}
-
-	public void setDineroLonja(double dineroLonja) {
-		this.dineroLonja = dineroLonja;
-	}
-
 	public LinkedList<Articulo> getPendienteRetirada() {
 		return pendienteRetirada;
 	}
@@ -52,4 +43,4 @@ public class Comprador implements Serializable {
 		this.pendienteRetirada = pendienteRetirada;
 	}
 
-}	
+}

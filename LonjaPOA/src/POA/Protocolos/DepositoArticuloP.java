@@ -28,7 +28,7 @@ public class DepositoArticuloP extends AchieveREResponder {
 		}
 		ACLMessage msjRespuesta = msjDeposito.createReply();
 		if (articulo != null && ((AgenteLonja) myAgent).containsVendedor(msjDeposito.getSender())) {
-			((AgenteLonja) myAgent).addArticuloParaSubastar(articulo);
+			((AgenteLonja) myAgent).addArticuloParaSubastar(articulo, msjDeposito.getSender());
 			msjRespuesta.setPerformative(ACLMessage.INFORM);
 			msjRespuesta.setContent("Articulo depositado con exito");
 		} else {

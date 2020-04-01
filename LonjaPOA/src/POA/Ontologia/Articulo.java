@@ -2,6 +2,7 @@ package POA.Ontologia;
 
 import java.util.Date;
 
+import jade.core.AID;
 import jade.util.leap.Serializable;
 
 @SuppressWarnings("serial")
@@ -13,7 +14,8 @@ public class Articulo implements Serializable {
 	private double precioReserva;
 	private Date horaRegistro;
 	private Date horaVenta;
-
+	private AID comprador;
+	
 	public void setPescado(String pescado) {
 		this.pescado = pescado;
 	}
@@ -60,6 +62,14 @@ public class Articulo implements Serializable {
 
 	public void setHoraVenta(Date horaVenta) {
 		this.horaVenta = horaVenta;
+	}
+
+	public AID getComprador() {
+		return comprador;
+	}
+
+	public void setComprador(AID comprador) {
+		this.comprador = comprador;
 	}
 	
 

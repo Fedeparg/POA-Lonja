@@ -1,5 +1,6 @@
 !!POA.Ontologia.Comprador
 listaCompra:
    - kilos: 5
-     pescado: "Boqueron"
+     pescado: "sardina"
+     precioDispuesto: 90
 dinero: 1000.0

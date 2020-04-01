@@ -8,9 +8,7 @@ import java.util.Date;
 import org.yaml.snakeyaml.Yaml;
 
 import POA.Ontologia.Articulo;
-import POA.Ontologia.Comprador;
 import POA.Ontologia.Lonja;
-import POA.Ontologia.Vendedor;
 import POA.Protocolos.AdmisionCompradorP;
 import POA.Protocolos.AdmisionVendedorP;
 import POA.Protocolos.AperturaCreditoLonja;
@@ -30,6 +28,7 @@ import jade.lang.acl.ACLMessage;
 public class AgenteLonja extends POAAgent {
 
 	private Lonja config;
+	private boolean subastaEnMarcha = false;
 
 	public void setup() {
 		super.setup();
@@ -72,20 +71,26 @@ public class AgenteLonja extends POAAgent {
 				addBehaviour(new CyclicBehaviour() {
 					@Override
 					public void action() {
-						ACLMessage msjVendoPescado = new ACLMessage(ACLMessage.CFP);
-						for (AID aidComprador : config.getAIDCompradores()) {
-							msjVendoPescado.addReceiver(aidComprador);
+						if (!config.getArticulosParaSubastar().isEmpty() && !subastaEnMarcha
+								&& !config.getCompradores().isEmpty()) {
+							subastaEnMarcha = true;
+							ACLMessage msjVendoPescado = new ACLMessage(ACLMessage.CFP);
+							for (AID aidComprador : config.getCompradores()) {
+								msjVendoPescado.addReceiver(aidComprador);
+							}
+							Articulo articuloIteracion = config.getArticulosParaSubastar().getFirst();
+							try {
+								msjVendoPescado.setContentObject(articuloIteracion);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+							msjVendoPescado.setConversationId("Subasta");
+							msjVendoPescado.setProtocol(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET);
+							msjVendoPescado.setReplyByDate(new Date(System.currentTimeMillis() + 5000));
+							((POAAgent) myAgent).getLogger().info("Subasta", "Iniciada subasta de articulo"
+									+ articuloIteracion + "al precio " + articuloIteracion.getPrecio());
+							myAgent.addBehaviour(new SubastaLonja(myAgent, msjVendoPescado, articuloIteracion));
 						}
-						Articulo articuloIteracion = config.getArticulosParaSubastar().getFirst();
-						try {
-							msjVendoPescado.setContentObject(articuloIteracion);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						msjVendoPescado.setConversationId("Subasta");
-						msjVendoPescado.setProtocol(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET);
-						msjVendoPescado.setReplyByDate(new Date(System.currentTimeMillis()+5000));
-						myAgent.addBehaviour(new SubastaLonja(myAgent, msjVendoPescado, articuloIteracion));
 					}
 				});
 			}
@@ -110,49 +115,57 @@ public class AgenteLonja extends POAAgent {
 		return config;
 	}
 
-	public void addVendedor(AID AIDvendedor, Vendedor vendedor) {
-		if (!this.config.getVendedores().containsValue(vendedor)) {
-			this.config.getVendedores().put(AIDvendedor, vendedor);
+	public boolean isSubastaEnMarcha() {
+		return subastaEnMarcha;
+	}
+
+	public void setSubastaEnMarcha(boolean subastaEnMarcha) {
+		this.subastaEnMarcha = subastaEnMarcha;
+	}
+
+	public void addVendedor(AID AIDvendedor) {
+		if (!containsVendedor(AIDvendedor)) {
+			this.config.getVendedores().add(AIDvendedor);
 		}
 	}
 
-	public boolean containsVendedor(AID aidVendedor) {
-		return this.config.getVendedores().containsKey(aidVendedor);
+	public boolean containsVendedor(AID AIDVendedor) {
+		return this.config.getVendedores().contains(AIDVendedor);
 	}
 
-	public void addComprador(AID AIDcomprador, Comprador comprador) {
-		if (!this.config.getCompradores().containsValue(comprador)) {
-			this.config.getCompradores().put(AIDcomprador, comprador);
+	public void addComprador(AID AIDcomprador) {
+		if (!containsComprador(AIDcomprador)) {
+			this.config.setDineroComprador(AIDcomprador, 0.0);
 		}
 	}
 
 	public boolean containsComprador(AID aidComprador) {
-		return this.config.getCompradores().containsKey(aidComprador);
+		return this.config.getCompradores().contains(aidComprador);
 	}
 
-	public void addArticuloParaSubastar(Articulo articulo) {
+	public void addArticuloParaSubastar(Articulo articulo, AID vendedor) {
 		articulo.setHoraRegistro(new Date());
-		this.config.getArticulosParaSubastar().add(articulo);
+		this.config.addArticuloParaSubastar(articulo, vendedor);
 	}
 
 	public void addDineroComprador(AID aidComprador, double oros) {
-		config.getCompradores().get(aidComprador).setDineroLonja(oros);
+		this.config.setDineroComprador(aidComprador, oros);
 	}
-	
-	public void articuloVendido(Articulo articulo) {
+
+	public void articuloVendido(Articulo articulo, AID comprador) {
 		articulo.setHoraVenta(new Date());
-		config.getArticulosParaSubastar().remove(articulo);
-		config.getArticulosCompradosNoPagados().add(articulo);
+		articulo.setComprador(comprador);
+		config.articuloVendido(articulo);
 	}
-	
+
 	public boolean reducirPrecio(Articulo articulo) {
 		articulo.setPrecio(articulo.getPrecio() - config.getDecrementoPrecio());
 		if (articulo.getPrecio() < articulo.getPrecioReserva())
 			return false;
 		return true;
 	}
-	
+
 	public boolean suficienteDinero(AID comprador, double precio) {
-		return config.getCompradores().get(comprador).getDineroLonja() > precio;
+		return config.getDineroComprador(comprador) > precio;
 	}
 }
