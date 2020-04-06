@@ -69,27 +69,47 @@ public class AgenteLonja extends POAAgent {
 
 				// Vendemos cosas
 				addBehaviour(new CyclicBehaviour() {
+					private int state = 0;
+					private Articulo articuloIteracion = null;
+
 					@Override
 					public void action() {
-						if (!config.getArticulosParaSubastar().isEmpty() && !subastaEnMarcha
-								&& !config.getCompradores().isEmpty()) {
-							subastaEnMarcha = true;
-							ACLMessage msjVendoPescado = new ACLMessage(ACLMessage.CFP);
-							for (AID aidComprador : config.getCompradores()) {
-								msjVendoPescado.addReceiver(aidComprador);
+						if (state == 0) {
+							((POAAgent) myAgent).getLogger().info("Subasta", "PAUSA ENTRE SUBASTAS");
+							block(config.getPeriodoLatencia());
+							state++;
+						} else {
+							if (!config.getArticulosParaSubastar().isEmpty()) {
+								if (articuloIteracion != null && articuloIteracion.getComprador() != null) {
+									articuloIteracion = config.getArticulosParaSubastar().getFirst();
+									state = 0;
+								} else {
+									articuloIteracion = config.getArticulosParaSubastar().getFirst();
+								}
+							} else {
+								articuloIteracion = null;
 							}
-							Articulo articuloIteracion = config.getArticulosParaSubastar().getFirst();
-							try {
-								msjVendoPescado.setContentObject(articuloIteracion);
-							} catch (IOException e) {
-								e.printStackTrace();
+							if (articuloIteracion != null && !subastaEnMarcha && !config.getCompradores().isEmpty()
+									&& state != 0) {
+								subastaEnMarcha = true;
+								ACLMessage msjVendoPescado = new ACLMessage(ACLMessage.CFP);
+								for (AID aidComprador : config.getCompradores()) {
+									msjVendoPescado.addReceiver(aidComprador);
+								}
+								try {
+									msjVendoPescado.setContentObject(articuloIteracion);
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+								msjVendoPescado.setConversationId("Subasta");
+								msjVendoPescado.setProtocol(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET);
+								msjVendoPescado.setReplyByDate(
+										new Date(System.currentTimeMillis() + config.getVentanaOportunidad()));
+								((POAAgent) myAgent).getLogger().info("Subasta", "Iniciada subasta de articulo"
+										+ articuloIteracion + "al precio " + articuloIteracion.getPrecio());
+								myAgent.addBehaviour(new SubastaLonja(myAgent, msjVendoPescado, articuloIteracion));
 							}
-							msjVendoPescado.setConversationId("Subasta");
-							msjVendoPescado.setProtocol(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET);
-							msjVendoPescado.setReplyByDate(new Date(System.currentTimeMillis() + 5000));
-							((POAAgent) myAgent).getLogger().info("Subasta", "Iniciada subasta de articulo"
-									+ articuloIteracion + "al precio " + articuloIteracion.getPrecio());
-							myAgent.addBehaviour(new SubastaLonja(myAgent, msjVendoPescado, articuloIteracion));
+
 						}
 					}
 				});
@@ -155,7 +175,7 @@ public class AgenteLonja extends POAAgent {
 	public void articuloVendido(Articulo articulo, AID comprador) {
 		articulo.setHoraVenta(new Date());
 		articulo.setComprador(comprador);
-		config.articuloVendido(articulo);
+		config.articuloVendido(articulo, comprador);
 	}
 
 	public boolean reducirPrecio(Articulo articulo) {
@@ -167,5 +187,11 @@ public class AgenteLonja extends POAAgent {
 
 	public boolean suficienteDinero(AID comprador, double precio) {
 		return config.getDineroComprador(comprador) > precio;
+	}
+
+	public void imposibleVender(Articulo articulo) {
+		((POAAgent) this).getLogger().info("Subasta",
+				"Articulo " + articulo + " imposible de vender");
+		config.imposibleVender(articulo);
 	}
 }

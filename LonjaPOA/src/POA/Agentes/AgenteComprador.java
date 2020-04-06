@@ -132,5 +132,9 @@ public class AgenteComprador extends POAAgent {
 		return false;
 	}
 	
+	public void eliminarListaCompra(String pescado, double cantidad) {
+		config.eliminarListaCompra(pescado, cantidad);
+	}
+	
 
 }

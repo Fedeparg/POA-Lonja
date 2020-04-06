@@ -1,2 +1,4 @@
 !!POA.Ontologia.Lonja
 decrementoPrecio: 10
+periodoLatencia: 1000
+ventanaOportunidad: 500

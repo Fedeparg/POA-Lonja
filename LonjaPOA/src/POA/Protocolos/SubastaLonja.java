@@ -55,17 +55,24 @@ public class SubastaLonja extends ContractNetInitiator {
 				aceptaciones.add(msjRespuesta);
 			}
 			if (!articuloAdjudicado) {
-				((AgenteLonja) myAgent).reducirPrecio(articuloActual);
-				((POAAgent) myAgent).getLogger().info("Subasta", "Reintentando subasta de articulo" + articuloActual
-						+ " con precio " + articuloActual.getPrecio());
-				((AgenteLonja) myAgent).setSubastaEnMarcha(false);
+				if (((AgenteLonja) myAgent).reducirPrecio(articuloActual)) {
+					((POAAgent) myAgent).getLogger().info("Subasta", "Reintentando subasta de articulo" + articuloActual
+							+ " con precio " + articuloActual.getPrecio());
+					((AgenteLonja) myAgent).setSubastaEnMarcha(false);
+				} else {
+					((AgenteLonja) myAgent).imposibleVender(articuloActual);
+				}
 
 			}
 		} else {
-			((AgenteLonja) myAgent).reducirPrecio(articuloActual);
-			((POAAgent) myAgent).getLogger().info("Subasta",
-					"Reintentando subasta de articulo" + articuloActual + " con precio " + articuloActual.getPrecio());
-			((AgenteLonja) myAgent).setSubastaEnMarcha(false);
+			if (((AgenteLonja) myAgent).reducirPrecio(articuloActual)) {
+				((POAAgent) myAgent).getLogger().info("Subasta",
+						"Reintentando subasta de articulo" + articuloActual + " con precio " + articuloActual.getPrecio());
+				((AgenteLonja) myAgent).setSubastaEnMarcha(false);
+			} else {
+				((AgenteLonja) myAgent).imposibleVender(articuloActual);
+			}
+
 		}
 	}
 

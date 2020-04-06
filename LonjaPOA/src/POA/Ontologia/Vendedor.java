@@ -7,8 +7,12 @@ import jade.util.leap.Serializable;
 
 @SuppressWarnings("serial")
 public class Vendedor implements Serializable {
+	
+	private double ganancias;
 
 	private LinkedList<Articulo> productosParaVender;
+	
+	
 	public void setProductosParaVender(LinkedList<Articulo> productosParaVender) {
 		this.productosParaVender = productosParaVender;
 	}
@@ -34,6 +38,14 @@ public class Vendedor implements Serializable {
 
 	public AID[] getLonjas() {
 		return lonjas;
+	}
+	
+	public double getGanancias() {
+		return ganancias;
+	}
+
+	public void setGanancias(double ganancias) {
+		this.ganancias = ganancias;
 	}
 
 }

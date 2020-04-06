@@ -41,9 +41,31 @@ public class SubastaComprador extends ContractNetResponder {
 			} catch (IOException | UnreadableException e) {
 				e.printStackTrace();
 			}
+			((POAAgent) myAgent).getLogger().info("Subasta", "Pujo por el artículo");
 			return puja;
 		}
-		return null;	
+		return null;
+	}
+
+	protected ACLMessage handleAcceptProposal(ACLMessage cfp, ACLMessage propose, ACLMessage accept)
+			throws FailureException {
+		((POAAgent) myAgent).getLogger().info("Subasta", "He comprado cosas");
+		ACLMessage response = accept.createReply();
+		response.setPerformative(ACLMessage.INFORM);
+		String pescadito = null;
+		double kilos = 0;
+		try {
+			pescadito = ((Articulo) cfp.getContentObject()).getPescado();
+			kilos = ((Articulo) cfp.getContentObject()).getKilos();
+		} catch (UnreadableException e) {
+			e.printStackTrace();
+		}
+		((AgenteComprador) myAgent).eliminarListaCompra(pescadito, kilos);
+		return response;
+	}
+
+	protected void handleRejectProposal(ACLMessage cfp, ACLMessage propose, ACLMessage reject) {
+		((POAAgent) myAgent).getLogger().info("Subasta", "Pos se me han adelantado");
 	}
 
 }

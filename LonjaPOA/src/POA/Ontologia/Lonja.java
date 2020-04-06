@@ -15,6 +15,32 @@ public class Lonja {
 	private HashMap<Articulo, AID> articulosCompradosNoPagados = new HashMap<Articulo, AID>();
 	private HashMap<Articulo, AID> articulosImposiblesDeVender = new HashMap<Articulo, AID>();
 	private int decrementoPrecio;
+	private int periodoLatencia;
+	private int ventanaOportunidad;
+
+	public HashMap<AID, Double> getDineroCompradores() {
+		return dineroCompradores;
+	}
+
+	public void setDineroCompradores(HashMap<AID, Double> dineroCompradores) {
+		this.dineroCompradores = dineroCompradores;
+	}
+
+	public int getPeriodoLatencia() {
+		return periodoLatencia;
+	}
+
+	public void setPeriodoLatencia(int periodoLatencia) {
+		this.periodoLatencia = periodoLatencia;
+	}
+
+	public int getVentanaOportunidad() {
+		return ventanaOportunidad;
+	}
+
+	public void setVentanaOportunidad(int ventanaOportunidad) {
+		this.ventanaOportunidad = ventanaOportunidad;
+	}
 
 	public LinkedList<AID> getVendedores() {
 		return vendedores;
@@ -79,10 +105,18 @@ public class Lonja {
 		this.decrementoPrecio = decrementoPrecio;
 	}
 
-	public void articuloVendido(Articulo articulo) {
+	public void articuloVendido(Articulo articulo, AID comprador) {
 		AID vendedor = articulosParaSubastar.get(articulo);
+		Double dineroComprador = dineroCompradores.get(comprador);
+		dineroCompradores.replace(comprador, dineroComprador-articulo.getPrecio());
 		articulosParaSubastar.remove(articulo);
 		articulosCompradosNoPagados.put(articulo, vendedor);
+	}
+	
+	public void imposibleVender(Articulo articulo) {
+		AID vendedor = articulosParaSubastar.get(articulo);
+		articulosParaSubastar.remove(articulo);
+		articulosImposiblesDeVender.put(articulo, vendedor);
 	}
 
 }

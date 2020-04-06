@@ -1,5 +1,6 @@
 package POA.Ontologia;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import jade.util.leap.Serializable;
@@ -41,6 +42,20 @@ public class Comprador implements Serializable {
 
 	public void setPendienteRetirada(LinkedList<Articulo> pendienteRetirada) {
 		this.pendienteRetirada = pendienteRetirada;
+	}
+
+	public void eliminarListaCompra(String pescado, double cantidad) {
+		for (Iterator<ArticuloCompra> iterator = listaCompra.iterator(); iterator.hasNext();) {
+			ArticuloCompra articulo = (ArticuloCompra) iterator.next();
+			if (articulo.getPescado().equals(pescado)) {
+				if (articulo.getKilos() <= cantidad) {
+					listaCompra.remove(articulo);
+				} else {
+					articulo.setKilos(articulo.getKilos() - cantidad);
+				}
+			}
+		}
+
 	}
 
 }
