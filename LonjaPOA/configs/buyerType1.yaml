@@ -1,6 +1,6 @@
 !!POA.Ontologia.Comprador
 listaCompra:
-   - kilos: 15
+   - kilos: 10
      pescado: "sardina"
      precioDispuesto: 90
 dinero: 100.0

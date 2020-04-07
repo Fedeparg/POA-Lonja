@@ -75,5 +75,6 @@ public class SubastaLonja extends ContractNetInitiator {
 
 		}
 	}
+	
 
 }

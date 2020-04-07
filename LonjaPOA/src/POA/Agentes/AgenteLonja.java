@@ -13,6 +13,7 @@ import POA.Protocolos.AdmisionCompradorP;
 import POA.Protocolos.AdmisionVendedorP;
 import POA.Protocolos.AperturaCreditoLonja;
 import POA.Protocolos.DepositoArticuloP;
+import POA.Protocolos.RetiradaArticuloLonja;
 import POA.Protocolos.SubastaLonja;
 import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
@@ -29,6 +30,8 @@ public class AgenteLonja extends POAAgent {
 
 	private Lonja config;
 	private boolean subastaEnMarcha = false;
+	private int state = 0;
+
 
 	public void setup() {
 		super.setup();
@@ -69,9 +72,8 @@ public class AgenteLonja extends POAAgent {
 
 				// Vendemos cosas
 				addBehaviour(new CyclicBehaviour() {
-					private int state = 0;
 					private Articulo articuloIteracion = null;
-
+					
 					@Override
 					public void action() {
 						if (state == 0) {
@@ -113,6 +115,10 @@ public class AgenteLonja extends POAAgent {
 						}
 					}
 				});
+				
+				// PROTOCOLO RETIRADA ARTICULO
+				MessageTemplate msjRetiradaArticulo = MessageTemplate.MatchConversationId("RetiradaArticulo");
+				addBehaviour(new RetiradaArticuloLonja(this, msjRetiradaArticulo));
 			}
 		} else {
 			this.getLogger().info("ERROR", "Requiere fichero de cofiguración.");
@@ -141,6 +147,14 @@ public class AgenteLonja extends POAAgent {
 
 	public void setSubastaEnMarcha(boolean subastaEnMarcha) {
 		this.subastaEnMarcha = subastaEnMarcha;
+	}
+	
+	public int getState() {
+		return state;
+	}
+
+	public void setState(int state) {
+		this.state = state;
 	}
 
 	public void addVendedor(AID AIDvendedor) {
@@ -194,4 +208,5 @@ public class AgenteLonja extends POAAgent {
 				"Articulo " + articulo + " imposible de vender");
 		config.imposibleVender(articulo);
 	}
+
 }

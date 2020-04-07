@@ -4,16 +4,21 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 
 import org.yaml.snakeyaml.Yaml;
 
+import POA.Ontologia.Articulo;
 import POA.Ontologia.ArticuloCompra;
 import POA.Ontologia.Comprador;
 import POA.Protocolos.AdmisionCompradorI;
 import POA.Protocolos.AperturaCreditoComprador;
 import POA.Protocolos.DepositoArticuloP;
+import POA.Protocolos.RetiradaArticuloComprador;
 import POA.Protocolos.SubastaComprador;
+import POA.Protocolos.SubastaLonja;
 import jade.core.AID;
+import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.SequentialBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -29,6 +34,9 @@ public class AgenteComprador extends POAAgent {
 	private AID[] lonjas;
 	private Comprador config;
 	private AID lonja;
+	private boolean retiradaEnMarcha = false; 
+
+
 
 	public void setup() {
 
@@ -95,6 +103,35 @@ public class AgenteComprador extends POAAgent {
 
 				MessageTemplate msjPuja = MessageTemplate.MatchConversationId("Subasta");
 				addBehaviour(new SubastaComprador(this, msjPuja));
+
+				addBehaviour(new CyclicBehaviour() {
+					private int state = 0;
+					@Override
+					public void action() {
+						if (state == 0) {
+							block(1000);
+							state++;
+						} else {
+							if (!config.getPendienteRetirada().isEmpty() && !retiradaEnMarcha) {
+								retiradaEnMarcha = true;
+								ACLMessage msjRetiradaArticulo = new ACLMessage(ACLMessage.REQUEST);
+								msjRetiradaArticulo.addReceiver(lonja);
+								try {
+									msjRetiradaArticulo.setContentObject(config.getPendienteRetirada().getFirst());
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+								msjRetiradaArticulo.setConversationId("RetiradaArticulo");
+								msjRetiradaArticulo.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
+								((POAAgent) myAgent).getLogger().info("RetiradaArticulo", "Retirando articulo " + config.getPendienteRetirada().getFirst());
+								myAgent.addBehaviour(new RetiradaArticuloComprador(myAgent, msjRetiradaArticulo, config.getPendienteRetirada().getFirst()));
+							} else {
+								state = 0;
+							}
+
+						}
+					}
+				});
 			} else {
 				doDelete();
 			}
@@ -131,10 +168,21 @@ public class AgenteComprador extends POAAgent {
 		}
 		return false;
 	}
-	
-	public void eliminarListaCompra(String pescado, double cantidad) {
-		config.eliminarListaCompra(pescado, cantidad);
+
+	public void eliminarListaCompra(Articulo articulo) {
+		config.eliminarListaCompra(articulo);
 	}
 	
+	public void retiradaArticulo(Articulo articulo) {
+		config.eliminarArticuloRetirada(articulo);
+	}
+	
+	public boolean isRetiradaEnMarcha() {
+		return retiradaEnMarcha;
+	}
+
+	public void setRetiradaEnMarcha(boolean retiradaEnMarcha) {
+		this.retiradaEnMarcha = retiradaEnMarcha;
+	}
 
 }

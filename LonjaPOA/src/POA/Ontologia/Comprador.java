@@ -44,18 +44,25 @@ public class Comprador implements Serializable {
 		this.pendienteRetirada = pendienteRetirada;
 	}
 
-	public void eliminarListaCompra(String pescado, double cantidad) {
+	public void eliminarListaCompra(Articulo articuloComprado) {
 		for (Iterator<ArticuloCompra> iterator = listaCompra.iterator(); iterator.hasNext();) {
 			ArticuloCompra articulo = (ArticuloCompra) iterator.next();
-			if (articulo.getPescado().equals(pescado)) {
-				if (articulo.getKilos() <= cantidad) {
+			if (articulo.getPescado().equals(articuloComprado.getPescado())) {
+				if (articulo.getKilos() <= articuloComprado.getKilos()) {
+					pendienteRetirada.add(articuloComprado);
 					listaCompra.remove(articulo);
 				} else {
-					articulo.setKilos(articulo.getKilos() - cantidad);
+					articulo.setKilos(articulo.getKilos() - articuloComprado.getKilos());
 				}
 			}
 		}
 
+	}
+	
+	public void eliminarArticuloRetirada(Articulo articulo) { 
+		this.articulosComprados.add(articulo);
+		this.pendienteRetirada.remove(articulo);
+		this.dinero = this.dinero - articulo.getPrecio();
 	}
 
 }

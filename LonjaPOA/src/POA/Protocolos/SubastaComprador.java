@@ -50,18 +50,14 @@ public class SubastaComprador extends ContractNetResponder {
 	protected ACLMessage handleAcceptProposal(ACLMessage cfp, ACLMessage propose, ACLMessage accept)
 			throws FailureException {
 		((POAAgent) myAgent).getLogger().info("Subasta", "He comprado cosas");
-		ACLMessage response = accept.createReply();
-		response.setPerformative(ACLMessage.INFORM);
-		String pescadito = null;
-		double kilos = 0;
+		Articulo articulo = null;
 		try {
-			pescadito = ((Articulo) cfp.getContentObject()).getPescado();
-			kilos = ((Articulo) cfp.getContentObject()).getKilos();
+			articulo = (Articulo) cfp.getContentObject();
 		} catch (UnreadableException e) {
 			e.printStackTrace();
 		}
-		((AgenteComprador) myAgent).eliminarListaCompra(pescadito, kilos);
-		return response;
+		((AgenteComprador) myAgent).eliminarListaCompra(articulo);
+		return null;
 	}
 
 	protected void handleRejectProposal(ACLMessage cfp, ACLMessage propose, ACLMessage reject) {

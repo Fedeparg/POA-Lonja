@@ -118,5 +118,6 @@ public class Lonja {
 		articulosParaSubastar.remove(articulo);
 		articulosImposiblesDeVender.put(articulo, vendedor);
 	}
+	
 
 }

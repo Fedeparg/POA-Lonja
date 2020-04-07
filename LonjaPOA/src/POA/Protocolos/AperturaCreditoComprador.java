@@ -17,11 +17,11 @@ public class AperturaCreditoComprador extends AchieveREInitiator {
 	protected void handleInform(ACLMessage msjRegistroExito) {
 		((POAAgent) myAgent).getLogger().info("AperturaCredito",
 				"Recibido mensaje de aceptacion apertura credito en " + msjRegistroExito.getSender().getLocalName());
-		try {
-			((AgenteComprador) this.myAgent).cambiarDinero((Double) msjRegistroExito.getContentObject());
-		} catch (UnreadableException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			((AgenteComprador) this.myAgent).cambiarDinero((Double) msjRegistroExito.getContentObject());
+//		} catch (UnreadableException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	protected void handleFailure(ACLMessage msjRegistroFallo) {

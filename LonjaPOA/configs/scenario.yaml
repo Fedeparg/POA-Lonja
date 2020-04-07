@@ -14,5 +14,3 @@ sellers:
     config: "configs/sellerType1.yaml"
   - name: "Vendedor2"
     config: "configs/sellerType1.yaml"
-  - name: "Vendedor3"
-    config: "configs/sellerType1.yaml"

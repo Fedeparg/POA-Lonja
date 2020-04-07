@@ -5,6 +5,7 @@ import java.util.Date;
 import jade.core.AID;
 import jade.util.leap.Serializable;
 
+
 @SuppressWarnings("serial")
 public class Articulo implements Serializable {
 
