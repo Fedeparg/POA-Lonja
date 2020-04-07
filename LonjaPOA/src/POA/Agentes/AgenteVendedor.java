@@ -71,7 +71,6 @@ public class AgenteVendedor extends POAAgent {
 					System.out.println(
 							this.getLocalName() + ": Enviando peticion de registro a lonja " + lonja.getLocalName());
 					seq.addSubBehaviour(new AdmisionVendedorI(this, mensajeRegistro));
-					// addBehaviour(new AdmisionVendedorI(this, mensajeRegistro));
 				}
 
 				// Enviamos los mensajes para depositar articulos en la lonja

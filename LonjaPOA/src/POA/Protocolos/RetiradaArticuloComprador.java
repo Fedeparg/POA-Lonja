@@ -18,13 +18,6 @@ public class RetiradaArticuloComprador extends AchieveREInitiator {
 	}
 
 	protected void handleInform(ACLMessage msjRetiradaArticulo) {
-		
-//		try {
-//			articulo = (Articulo) msjRetiradaArticulo.getContentObject();
-//		} catch (UnreadableException e) {
-//			e.printStackTrace();
-//		}
-		
 		((AgenteComprador) myAgent).retiradaArticulo(articulo);
 		((POAAgent) myAgent).getLogger().info("RetiradaArticulo", "Recibido el articulo");
 		((AgenteComprador) myAgent).setRetiradaEnMarcha(false);

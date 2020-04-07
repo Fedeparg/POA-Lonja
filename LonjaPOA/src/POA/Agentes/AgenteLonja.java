@@ -32,7 +32,7 @@ public class AgenteLonja extends POAAgent {
 	private Lonja config;
 	private boolean subastaEnMarcha = false;
 	private int state = 0;
-	private boolean puja = false;
+	private boolean pujaEnMarcha = false;
 
 	public void setup() {
 		super.setup();
@@ -71,15 +71,17 @@ public class AgenteLonja extends POAAgent {
 				MessageTemplate msjAperturaCredito = MessageTemplate.MatchConversationId("AperturaCredito");
 				addBehaviour(new AperturaCreditoLonja(this, msjAperturaCredito));
 
-				// Vendemos cosas
+				// Subasta de artículos
 				addBehaviour(new CyclicBehaviour() {
+					
 					private Articulo articuloIteracion = null;
 
 					@Override
 					public void action() {
 						if (state == 0 && !config.getArticulosParaSubastar().isEmpty()) {
-							if (!puja) {
-								puja = true;
+							if (!pujaEnMarcha) {
+								// Iniciamos una nueva puja de un nuevo articulo
+								pujaEnMarcha = true;
 								((POAAgent) myAgent).getLogger().info("Subasta", "PAUSA ENTRE SUBASTAS");
 								articuloIteracion = config.getArticulosParaSubastar().getFirst();
 								myAgent.addBehaviour(new WakerBehaviour(myAgent, config.getPeriodoLatencia()) {
@@ -90,9 +92,11 @@ public class AgenteLonja extends POAAgent {
 							}
 						} else if (!config.getArticulosParaSubastar().isEmpty()) {
 							if (articuloIteracion != config.getArticulosParaSubastar().getFirst()) {
+								// Si vamos a subastar un nuevo articulo 
 								state = 0;
 							} else if (articuloIteracion != null && !subastaEnMarcha
 									&& !config.getCompradores().isEmpty() && state != 0) {
+								// Continuamos con la siguiente ronda de un mismo articulo
 								subastaEnMarcha = true;
 								ACLMessage msjVendoPescado = new ACLMessage(ACLMessage.CFP);
 								for (AID aidComprador : config.getCompradores()) {
@@ -112,28 +116,6 @@ public class AgenteLonja extends POAAgent {
 								myAgent.addBehaviour(new SubastaLonja(myAgent, msjVendoPescado, articuloIteracion));
 							}
 						}
-
-//						if (state == 0) {
-//							if (!puja) {
-//								puja = true;
-//								((POAAgent) myAgent).getLogger().info("Subasta", "PAUSA ENTRE SUBASTAS");
-//								block(config.getPeriodoLatencia());
-//								state++;
-//							}
-//						} else {
-//							if (!config.getArticulosParaSubastar().isEmpty()) {
-//								if (articuloIteracion != null && articuloIteracion.getComprador() != null) {
-//									articuloIteracion = config.getArticulosParaSubastar().getFirst();
-//									state = 0;
-//								} else {
-//									articuloIteracion = config.getArticulosParaSubastar().getFirst();
-//								}
-//							} else {
-//								articuloIteracion = null;
-//							}
-//							
-						// EMPIEZA LA SUBASTA
-
 					}
 				});
 
@@ -230,11 +212,11 @@ public class AgenteLonja extends POAAgent {
 	}
 
 	public boolean isPuja() {
-		return puja;
+		return pujaEnMarcha;
 	}
 
 	public void setPuja(boolean puja) {
-		this.puja = puja;
+		this.pujaEnMarcha = puja;
 	}
 
 }

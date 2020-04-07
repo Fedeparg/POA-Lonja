@@ -36,8 +36,6 @@ public class AgenteComprador extends POAAgent {
 	private AID lonja;
 	private boolean retiradaEnMarcha = false; 
 
-
-
 	public void setup() {
 
 		super.setup();
@@ -104,10 +102,12 @@ public class AgenteComprador extends POAAgent {
 				MessageTemplate msjPuja = MessageTemplate.MatchConversationId("Subasta");
 				addBehaviour(new SubastaComprador(this, msjPuja));
 
+				// PROTOCOLO RETIRADA DE ARTICULOS
 				addBehaviour(new CyclicBehaviour() {
 					private int state = 0;
 					@Override
 					public void action() {
+						// Para no estar intentado retirar arituclos constantemente
 						if (state == 0) {
 							block(1000);
 							state++;
