@@ -17,6 +17,7 @@ import POA.Protocolos.RetiradaArticuloLonja;
 import POA.Protocolos.SubastaLonja;
 import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.WakerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPANames;
@@ -31,7 +32,7 @@ public class AgenteLonja extends POAAgent {
 	private Lonja config;
 	private boolean subastaEnMarcha = false;
 	private int state = 0;
-
+	private boolean puja = false;
 
 	public void setup() {
 		super.setup();
@@ -73,26 +74,25 @@ public class AgenteLonja extends POAAgent {
 				// Vendemos cosas
 				addBehaviour(new CyclicBehaviour() {
 					private Articulo articuloIteracion = null;
-					
+
 					@Override
 					public void action() {
-						if (state == 0) {
-							((POAAgent) myAgent).getLogger().info("Subasta", "PAUSA ENTRE SUBASTAS");
-							block(config.getPeriodoLatencia());
-							state++;
-						} else {
-							if (!config.getArticulosParaSubastar().isEmpty()) {
-								if (articuloIteracion != null && articuloIteracion.getComprador() != null) {
-									articuloIteracion = config.getArticulosParaSubastar().getFirst();
-									state = 0;
-								} else {
-									articuloIteracion = config.getArticulosParaSubastar().getFirst();
-								}
-							} else {
-								articuloIteracion = null;
+						if (state == 0 && !config.getArticulosParaSubastar().isEmpty()) {
+							if (!puja) {
+								puja = true;
+								((POAAgent) myAgent).getLogger().info("Subasta", "PAUSA ENTRE SUBASTAS");
+								articuloIteracion = config.getArticulosParaSubastar().getFirst();
+								myAgent.addBehaviour(new WakerBehaviour(myAgent, config.getPeriodoLatencia()) {
+									protected void onWake() {
+										state =1 ;
+									}
+								});
 							}
-							if (articuloIteracion != null && !subastaEnMarcha && !config.getCompradores().isEmpty()
-									&& state != 0) {
+						} else if (!config.getArticulosParaSubastar().isEmpty()) {
+							if (articuloIteracion != config.getArticulosParaSubastar().getFirst()) {
+								state = 0;
+							} else if (articuloIteracion != null && !subastaEnMarcha
+									&& !config.getCompradores().isEmpty() && state != 0) {
 								subastaEnMarcha = true;
 								ACLMessage msjVendoPescado = new ACLMessage(ACLMessage.CFP);
 								for (AID aidComprador : config.getCompradores()) {
@@ -111,11 +111,32 @@ public class AgenteLonja extends POAAgent {
 										+ articuloIteracion + "al precio " + articuloIteracion.getPrecio());
 								myAgent.addBehaviour(new SubastaLonja(myAgent, msjVendoPescado, articuloIteracion));
 							}
-
 						}
+
+//						if (state == 0) {
+//							if (!puja) {
+//								puja = true;
+//								((POAAgent) myAgent).getLogger().info("Subasta", "PAUSA ENTRE SUBASTAS");
+//								block(config.getPeriodoLatencia());
+//								state++;
+//							}
+//						} else {
+//							if (!config.getArticulosParaSubastar().isEmpty()) {
+//								if (articuloIteracion != null && articuloIteracion.getComprador() != null) {
+//									articuloIteracion = config.getArticulosParaSubastar().getFirst();
+//									state = 0;
+//								} else {
+//									articuloIteracion = config.getArticulosParaSubastar().getFirst();
+//								}
+//							} else {
+//								articuloIteracion = null;
+//							}
+//							
+						// EMPIEZA LA SUBASTA
+
 					}
 				});
-				
+
 				// PROTOCOLO RETIRADA ARTICULO
 				MessageTemplate msjRetiradaArticulo = MessageTemplate.MatchConversationId("RetiradaArticulo");
 				addBehaviour(new RetiradaArticuloLonja(this, msjRetiradaArticulo));
@@ -148,7 +169,7 @@ public class AgenteLonja extends POAAgent {
 	public void setSubastaEnMarcha(boolean subastaEnMarcha) {
 		this.subastaEnMarcha = subastaEnMarcha;
 	}
-	
+
 	public int getState() {
 		return state;
 	}
@@ -204,9 +225,16 @@ public class AgenteLonja extends POAAgent {
 	}
 
 	public void imposibleVender(Articulo articulo) {
-		((POAAgent) this).getLogger().info("Subasta",
-				"Articulo " + articulo + " imposible de vender");
+		((POAAgent) this).getLogger().info("Subasta", "Articulo " + articulo + " imposible de vender");
 		config.imposibleVender(articulo);
+	}
+
+	public boolean isPuja() {
+		return puja;
+	}
+
+	public void setPuja(boolean puja) {
+		this.puja = puja;
 	}
 
 }

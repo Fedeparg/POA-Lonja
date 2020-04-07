@@ -50,6 +50,8 @@ public class SubastaComprador extends ContractNetResponder {
 	protected ACLMessage handleAcceptProposal(ACLMessage cfp, ACLMessage propose, ACLMessage accept)
 			throws FailureException {
 		((POAAgent) myAgent).getLogger().info("Subasta", "He comprado cosas");
+		ACLMessage response = accept.createReply();
+		response.setPerformative(ACLMessage.INFORM);
 		Articulo articulo = null;
 		try {
 			articulo = (Articulo) cfp.getContentObject();
@@ -57,7 +59,7 @@ public class SubastaComprador extends ContractNetResponder {
 			e.printStackTrace();
 		}
 		((AgenteComprador) myAgent).eliminarListaCompra(articulo);
-		return null;
+		return response;
 	}
 
 	protected void handleRejectProposal(ACLMessage cfp, ACLMessage propose, ACLMessage reject) {

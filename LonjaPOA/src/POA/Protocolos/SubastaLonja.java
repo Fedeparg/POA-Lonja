@@ -14,11 +14,10 @@ import jade.proto.ContractNetInitiator;
 public class SubastaLonja extends ContractNetInitiator {
 
 	private Articulo articuloActual;
-	private ACLMessage cfp;
+	
 
 	public SubastaLonja(Agent a, ACLMessage cfp, Articulo articuloActual) {
 		super(a, cfp);
-		this.cfp = cfp;
 		this.articuloActual = articuloActual;
 	}
 
@@ -46,6 +45,7 @@ public class SubastaLonja extends ContractNetInitiator {
 						articuloActual.getPrecio())) {
 					msjRespuesta.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
 					((AgenteLonja) myAgent).articuloVendido(articuloActual, respuesta.getSender());
+					((AgenteLonja) myAgent).setState(0);
 					articuloAdjudicado = true;
 					((AgenteLonja) myAgent).setSubastaEnMarcha(false);
 					((POAAgent) myAgent).getLogger().info("Subasta", "Vendido el articulo " + articuloActual);
@@ -61,6 +61,8 @@ public class SubastaLonja extends ContractNetInitiator {
 					((AgenteLonja) myAgent).setSubastaEnMarcha(false);
 				} else {
 					((AgenteLonja) myAgent).imposibleVender(articuloActual);
+					((AgenteLonja) myAgent).setPuja(false);
+					((AgenteLonja) myAgent).setSubastaEnMarcha(false);
 				}
 
 			}
@@ -71,10 +73,15 @@ public class SubastaLonja extends ContractNetInitiator {
 				((AgenteLonja) myAgent).setSubastaEnMarcha(false);
 			} else {
 				((AgenteLonja) myAgent).imposibleVender(articuloActual);
+				((AgenteLonja) myAgent).setPuja(false);
+				((AgenteLonja) myAgent).setSubastaEnMarcha(false);
 			}
 
 		}
 	}
 	
+	protected void handleInform(ACLMessage inform) {
+		((AgenteLonja) myAgent).setPuja(false);
+	}
 
 }
