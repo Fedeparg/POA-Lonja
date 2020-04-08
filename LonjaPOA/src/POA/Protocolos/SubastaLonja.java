@@ -50,7 +50,7 @@ public class SubastaLonja extends ContractNetInitiator {
 					((AgenteLonja) myAgent).articuloVendido(articuloActual, respuesta.getSender());
 					articuloAdjudicado = true;
 					// Evitamos que haya mas rondas de venta de este articulo
-					((AgenteLonja) myAgent).setState(0);
+					((AgenteLonja) myAgent).setEstadoSubasta(0);
 					((AgenteLonja) myAgent).setSubastaEnMarcha(false);
 					((POAAgent) myAgent).getLogger().info("Subasta", "Vendido el articulo " + articuloActual);
 				} else {
@@ -68,7 +68,7 @@ public class SubastaLonja extends ContractNetInitiator {
 				((POAAgent) myAgent).getLogger().info("Subasta",
 						"Reintentando subasta de articulo" + articuloActual + " con precio " + articuloActual.getPrecio());
 			} else {
-				// Si no, lo añadimos a la lista de imposibles y la subasta de ese articulo se termina
+				// Si no, lo aï¿½adimos a la lista de imposibles y la subasta de ese articulo se termina
 				((AgenteLonja) myAgent).imposibleVender(articuloActual);
 				((AgenteLonja) myAgent).setPuja(false);
 			}

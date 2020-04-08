@@ -23,6 +23,7 @@ public class CobroLonja extends ProposeInitiator {
 		((POAAgent) myAgent).getLogger().info("Cobro", "Eliminando articulos cobrados...");
 		((AgenteLonja) myAgent).eliminarArticulosCobrados(accept_proposal.getSender(), articulos);
 		((AgenteLonja) myAgent).setCobroEnMarcha(false);
+		((AgenteLonja) myAgent).setEstadoCobro(0);
 	}
 
 }

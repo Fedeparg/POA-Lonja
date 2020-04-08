@@ -194,11 +194,11 @@ public class AgenteLonja extends POAAgent {
 		this.subastaEnMarcha = subastaEnMarcha;
 	}
 
-	public int getState() {
+	public int getEstadoSubasta() {
 		return estadoSubasta;
 	}
 
-	public void setState(int state) {
+	public void setEstadoSubasta(int state) {
 		this.estadoSubasta = state;
 	}
 
@@ -271,6 +271,14 @@ public class AgenteLonja extends POAAgent {
 
 	public void eliminarArticulosCobrados(AID vendedor, LinkedList<Articulo> articulos) {
 		config.eliminarArticulosCobrados(vendedor, articulos);
+	}
+	
+	public int getEstadoCobro() {
+		return estadoCobro;
+	}
+
+	public void setEstadoCobro(int estadoCobro) {
+		this.estadoCobro = estadoCobro;
 	}
 
 }
