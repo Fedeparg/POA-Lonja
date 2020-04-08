@@ -2,17 +2,17 @@ package POA.Ontologia;
 
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import jade.core.AID;
-import jade.lang.acl.ACLMessage;
 
 public class Lonja {
 
 	private LinkedList<AID> vendedores = new LinkedList<AID>();
 	private HashMap<AID, Double> dineroCompradores = new HashMap<AID, Double>();
 	private HashMap<Articulo, AID> articulosParaSubastar = new HashMap<Articulo, AID>();
-	private HashMap<Articulo, AID> articulosCompradosNoPagados = new HashMap<Articulo, AID>();
+	private HashMap<AID, LinkedList<Articulo>> articulosCompradosNoPagados = new HashMap<AID, LinkedList<Articulo>>();
 	private HashMap<Articulo, AID> articulosImposiblesDeVender = new HashMap<Articulo, AID>();
 	private int decrementoPrecio;
 	private int periodoLatencia;
@@ -73,20 +73,20 @@ public class Lonja {
 		return articulos;
 	}
 
+	public HashMap<AID, LinkedList<Articulo>> getArticulosCompradosNoPagados() {
+		return articulosCompradosNoPagados;
+	}
+
+	public void setArticulosCompradosNoPagados(HashMap<AID, LinkedList<Articulo>> articulosCompradosNoPagados) {
+		this.articulosCompradosNoPagados = articulosCompradosNoPagados;
+	}
+
 	public void setArticulosParaSubastar(HashMap<Articulo, AID> articulosParaSubastar) {
 		this.articulosParaSubastar = articulosParaSubastar;
 	}
 
 	public void addArticuloParaSubastar(Articulo articulo, AID vendedor) {
 		articulosParaSubastar.put(articulo, vendedor);
-	}
-
-	public LinkedList<Articulo> getArticulosCompradosNoPagados() {
-		return new LinkedList<Articulo>(articulosCompradosNoPagados.keySet());
-	}
-
-	public void setArticulosCompradosNoPagados(HashMap<Articulo, AID> articulosCompradosNoPagados) {
-		this.articulosCompradosNoPagados = articulosCompradosNoPagados;
 	}
 
 	public LinkedList<Articulo> getArticulosImposiblesDeVender() {
@@ -108,16 +108,45 @@ public class Lonja {
 	public void articuloVendido(Articulo articulo, AID comprador) {
 		AID vendedor = articulosParaSubastar.get(articulo);
 		Double dineroComprador = dineroCompradores.get(comprador);
-		dineroCompradores.replace(comprador, dineroComprador-articulo.getPrecio());
+		dineroCompradores.replace(comprador, dineroComprador - articulo.getPrecio());
 		articulosParaSubastar.remove(articulo);
-		articulosCompradosNoPagados.put(articulo, vendedor);
+		synchronized (articulosCompradosNoPagados) {
+			if (articulosCompradosNoPagados.containsKey(vendedor)) {
+				LinkedList<Articulo> articulos = articulosCompradosNoPagados.get(vendedor);
+				articulos.add(articulo);
+				articulosCompradosNoPagados.replace(vendedor, articulos);
+			} else {
+				LinkedList<Articulo> articulos = new LinkedList<Articulo>();
+				articulos.add(articulo);
+				articulosCompradosNoPagados.put(vendedor, articulos);
+			}
+		}
 	}
-	
+
 	public void imposibleVender(Articulo articulo) {
 		AID vendedor = articulosParaSubastar.get(articulo);
 		articulosParaSubastar.remove(articulo);
 		articulosImposiblesDeVender.put(articulo, vendedor);
 	}
-	
 
+	public double getDineroCobro(AID vendedor) {
+		LinkedList<Articulo> ventas = articulosCompradosNoPagados.get(vendedor);
+		Double dinero = 0.0;
+		for (Articulo articulo : ventas) {
+			dinero += articulo.getPrecio();
+		}
+		return dinero;
+	}
+
+	public void eliminarArticulosCobrados(AID vendedor, LinkedList<Articulo> articulos) {
+		synchronized (articulosCompradosNoPagados) {
+			LinkedList<Articulo> articulosVendedor = articulosCompradosNoPagados.get(vendedor);
+			articulosVendedor.removeAll(articulos);
+			if (articulosVendedor.isEmpty()) {
+				articulosCompradosNoPagados.remove(vendedor);
+			} else {
+				articulosCompradosNoPagados.replace(vendedor, articulosVendedor);
+			}
+		}
+	}
 }

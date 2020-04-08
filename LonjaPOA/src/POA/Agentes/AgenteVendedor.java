@@ -10,7 +10,10 @@ import org.yaml.snakeyaml.Yaml;
 import POA.Ontologia.Articulo;
 import POA.Ontologia.Vendedor;
 import POA.Protocolos.AdmisionVendedorI;
+import POA.Protocolos.CobroLonja;
+import POA.Protocolos.CobroVendedor;
 import POA.Protocolos.DepositoArticuloI;
+import POA.Protocolos.RetiradaArticuloLonja;
 import jade.core.AID;
 import jade.core.behaviours.SequentialBehaviour;
 import jade.domain.DFService;
@@ -19,6 +22,7 @@ import jade.domain.FIPANames;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 
 @SuppressWarnings("serial")
 public class AgenteVendedor extends POAAgent {
@@ -90,6 +94,9 @@ public class AgenteVendedor extends POAAgent {
 				}
 
 				addBehaviour(seq);
+				
+				MessageTemplate msjCobro = MessageTemplate.MatchConversationId("Cobro");
+				addBehaviour(new CobroVendedor(this, msjCobro));
 
 			} else {
 				doDelete();
@@ -113,5 +120,9 @@ public class AgenteVendedor extends POAAgent {
 			e.printStackTrace();
 		}
 		return config;
+	}
+	
+	public void addGanancias(Double dinero) {
+		config.setGanancias(config.getGanancias()+dinero);
 	}
 }
