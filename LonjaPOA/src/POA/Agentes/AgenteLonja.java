@@ -95,6 +95,8 @@ public class AgenteLonja extends POAAgent {
 									}
 								});
 							}
+							// Si no hay nada que hacer, nos dormimos durante un rato
+							block(config.getPeriodoLatencia() / 10);
 						} else if (!config.getArticulosParaSubastar().isEmpty()) {
 							if (articuloIteracion != config.getArticulosParaSubastar().getFirst()) {
 								// Si vamos a subastar un nuevo articulo
@@ -117,9 +119,15 @@ public class AgenteLonja extends POAAgent {
 								msjVendoPescado.setReplyByDate(
 										new Date(System.currentTimeMillis() + config.getVentanaOportunidad()));
 								((POAAgent) myAgent).getLogger().info("Subasta", "Iniciada subasta de articulo"
-										+ articuloIteracion + "al precio " + articuloIteracion.getPrecio());
+										+ articuloIteracion + " al precio " + articuloIteracion.getPrecio());
 								myAgent.addBehaviour(new SubastaLonja(myAgent, msjVendoPescado, articuloIteracion));
+							} else {
+								// Si la subasta esta en marcha, nos dormimos
+								block(config.getPeriodoLatencia() / 10);
 							}
+						} else {
+							// Si no hay articulos para subastar, dormimos
+							block(config.getPeriodoLatencia() / 5);
 						}
 					}
 				});
@@ -140,6 +148,7 @@ public class AgenteLonja extends POAAgent {
 									estadoCobro = 1;
 								}
 							});
+							block(config.getPeriodoLatencia());
 						} else {
 							if (!config.getArticulosCompradosNoPagados().isEmpty() && !cobroEnMarcha) {
 								cobroEnMarcha = true;
@@ -159,6 +168,8 @@ public class AgenteLonja extends POAAgent {
 									myAgent.addBehaviour(new CobroLonja(myAgent, msjCobro, articulos));
 								}
 
+							} else {
+								block(config.getPeriodoLatencia());
 							}
 						}
 					}
@@ -272,7 +283,7 @@ public class AgenteLonja extends POAAgent {
 	public void eliminarArticulosCobrados(AID vendedor, LinkedList<Articulo> articulos) {
 		config.eliminarArticulosCobrados(vendedor, articulos);
 	}
-	
+
 	public int getEstadoCobro() {
 		return estadoCobro;
 	}

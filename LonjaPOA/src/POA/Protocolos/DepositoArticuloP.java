@@ -16,7 +16,7 @@ public class DepositoArticuloP extends AchieveREResponder {
 		super(a, mt);
 	}
 
-	protected ACLMessage prepareResponse(ACLMessage msjDeposito) {
+	protected ACLMessage handleRequest(ACLMessage msjDeposito) {
 		((POAAgent) myAgent).getLogger().info("DepositoArticulo", "Recibida peticion de deposito de "
 				+ msjDeposito.getSender().getLocalName());
 		Articulo articulo = null;

@@ -1,5 +1,6 @@
 package POA.Protocolos;
 
+import POA.Agentes.AgenteComprador;
 import POA.Agentes.POAAgent;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
@@ -15,6 +16,7 @@ public class AdmisionCompradorI extends AchieveREInitiator {
 	protected void handleInform(ACLMessage msjRegistroExisto) {
 		((POAAgent) myAgent).getLogger().info("AdmisionComprador", "Recibido mensaje de aceptacion registro en  "
 				+ msjRegistroExisto.getSender().getLocalName());
+		((AgenteComprador) myAgent).removeBehaviour(this);
 	}
 
 	protected void handleFailure(ACLMessage msjRegistroFallo) {

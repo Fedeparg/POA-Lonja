@@ -71,6 +71,7 @@ public class SubastaLonja extends ContractNetInitiator {
 				// Si no, lo a�adimos a la lista de imposibles y la subasta de ese articulo se termina
 				((AgenteLonja) myAgent).imposibleVender(articuloActual);
 				((AgenteLonja) myAgent).setPuja(false);
+				((AgenteLonja) myAgent).setEstadoSubasta(0);
 			}
 			((AgenteLonja) myAgent).setSubastaEnMarcha(false);
 

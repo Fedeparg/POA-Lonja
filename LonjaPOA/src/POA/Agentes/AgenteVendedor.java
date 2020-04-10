@@ -15,6 +15,7 @@ import POA.Protocolos.CobroVendedor;
 import POA.Protocolos.DepositoArticuloI;
 import POA.Protocolos.RetiradaArticuloLonja;
 import jade.core.AID;
+import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.SequentialBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -29,6 +30,8 @@ public class AgenteVendedor extends POAAgent {
 
 	private AID[] lonjas;
 	private Vendedor config;
+	// Creamos un comportamiento secuencial para el registro y el deposito
+	SequentialBehaviour seq = new SequentialBehaviour(this);
 
 	public void setup() {
 		super.setup();
@@ -56,9 +59,6 @@ public class AgenteVendedor extends POAAgent {
 						e.printStackTrace();
 					}
 				} while (lonjas.length == 0);
-
-				// Creamos un comportamiento secuencial para el registro y el deposito
-				SequentialBehaviour seq = new SequentialBehaviour();
 
 				// Enviamos el mensaje de registro
 				for (AID lonja : lonjas) {
@@ -94,7 +94,8 @@ public class AgenteVendedor extends POAAgent {
 				}
 
 				addBehaviour(seq);
-				
+
+
 				MessageTemplate msjCobro = MessageTemplate.MatchConversationId("Cobro");
 				addBehaviour(new CobroVendedor(this, msjCobro));
 
@@ -121,8 +122,19 @@ public class AgenteVendedor extends POAAgent {
 		}
 		return config;
 	}
-	
+
 	public void addGanancias(Double dinero) {
-		config.setGanancias(config.getGanancias()+dinero);
+		config.setGanancias(config.getGanancias() + dinero);
+	}
+
+	/**
+	 * Eliminamos el comportamiento cuando ha terminado
+	 * @param bh
+	 */
+	public void removeSequentialBehaviour(Behaviour bh) {
+		seq.removeSubBehaviour(bh);
+		if(seq.getChildren().isEmpty()) {
+			removeBehaviour(seq);
+		}
 	}
 }

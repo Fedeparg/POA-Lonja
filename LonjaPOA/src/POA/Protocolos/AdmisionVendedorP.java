@@ -18,7 +18,7 @@ public class AdmisionVendedorP extends AchieveREResponder {
 		super(a, mt);
 	}
 
-	protected ACLMessage prepareResponse(ACLMessage msjRegistro) throws NotUnderstoodException, RefuseException {
+	protected ACLMessage handleRequest(ACLMessage msjRegistro) throws NotUnderstoodException, RefuseException {
 		((POAAgent) myAgent).getLogger().info("AdmisionVendedor", "Recibida peticion de registro vendedor de "
 				+ msjRegistro.getSender().getLocalName());
 		Vendedor vendedor = null;

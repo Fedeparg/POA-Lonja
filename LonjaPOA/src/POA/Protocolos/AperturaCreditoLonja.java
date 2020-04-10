@@ -20,7 +20,7 @@ public class AperturaCreditoLonja extends AchieveREResponder {
 		super(a, mt);
 	}
 
-	protected ACLMessage prepareResponse(ACLMessage msjRegistro) throws NotUnderstoodException, RefuseException {
+	protected ACLMessage handleRequest(ACLMessage msjRegistro) throws NotUnderstoodException, RefuseException {
 		((POAAgent) myAgent).getLogger().info("AperturaCredito",
 				"Recibida peticion de apertura credito de " + msjRegistro.getSender().getLocalName());
 		Double dinero = 0.0;

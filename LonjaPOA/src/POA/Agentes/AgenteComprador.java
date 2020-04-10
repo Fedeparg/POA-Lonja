@@ -18,6 +18,7 @@ import POA.Protocolos.RetiradaArticuloComprador;
 import POA.Protocolos.SubastaComprador;
 import POA.Protocolos.SubastaLonja;
 import jade.core.AID;
+import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.SequentialBehaviour;
 import jade.domain.DFService;
@@ -35,6 +36,7 @@ public class AgenteComprador extends POAAgent {
 	private Comprador config;
 	private AID lonja;
 	private boolean retiradaEnMarcha = false; 
+	SequentialBehaviour seq = new SequentialBehaviour(this);
 
 	public void setup() {
 
@@ -65,7 +67,6 @@ public class AgenteComprador extends POAAgent {
 				} while (lonjas.length == 0);
 				lonja = lonjas[0];
 
-				SequentialBehaviour seq = new SequentialBehaviour();
 				// PROTOCOLO REGISTRO
 				ACLMessage mensajeRegistro = new ACLMessage(ACLMessage.REQUEST);
 				mensajeRegistro.addReceiver(lonja);
@@ -183,6 +184,17 @@ public class AgenteComprador extends POAAgent {
 
 	public void setRetiradaEnMarcha(boolean retiradaEnMarcha) {
 		this.retiradaEnMarcha = retiradaEnMarcha;
+	}
+	
+	/**
+	 * Eliminamos el comportamiento cuando ha terminado
+	 * @param bh
+	 */
+	public void removeSequentialBehaviour(Behaviour bh) {
+		seq.removeSubBehaviour(bh);
+		if(seq.getChildren().isEmpty()) {
+			removeBehaviour(seq);
+		}
 	}
 
 }
