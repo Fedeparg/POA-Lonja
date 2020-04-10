@@ -1,4 +1,4 @@
-!!POA.Escenario.ScenarioConfig
+!!poa.escenario.ScenarioConfig
 name: "EscenarioPrueba"
 description: "Ejemplo para hacer una configuración YAML"
 fishMarket:
