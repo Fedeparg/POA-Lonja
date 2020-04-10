@@ -95,6 +95,9 @@ public class AgenteComprador extends POAAgent {
 
 	}
 
+	/**
+	 * Crea el mensaje e inicia el protocolo RegistroComprador
+	 */
 	private Behaviour protocoloRegistroComprador() {
 		ACLMessage msgRegistro = new ACLMessage(ACLMessage.REQUEST);
 		msgRegistro.addReceiver(lonja);
@@ -111,6 +114,9 @@ public class AgenteComprador extends POAAgent {
 		return new RegistroCompradorInitiator(this, msgRegistro);
 	}
 
+	/**
+	 * Crea el mensaje e inicia el protocolo AperturaCredito
+	 */
 	private Behaviour protocoloAperturaCredito() {
 		ACLMessage mensajeAperturaCredito = new ACLMessage(ACLMessage.REQUEST);
 		mensajeAperturaCredito.addReceiver(lonja);
@@ -126,6 +132,9 @@ public class AgenteComprador extends POAAgent {
 		return new AperturaCreditoInitiator(this, mensajeAperturaCredito);
 	}
 
+	/**
+	 * Crea el mensaje e inicia el protocolo RetiradaArticulos
+	 */
 	private void protocoloRetiradaArticulos() {
 
 		addBehaviour(new CyclicBehaviour() {

@@ -24,7 +24,7 @@ public class SubastaInitiator extends ContractNetInitiator {
 	protected void handleAllResponses(Vector responses, Vector acceptances) {
 		((POAAgent) myAgent).getLogger().info("Subasta", "Recibidas " + responses.size() + " peticiones de compra");
 		boolean articuloAdjudicado = false;
-		
+
 		if (responses.size() > 0) {
 
 			// Ordenamos las respuestas por fecha de envio
@@ -37,7 +37,7 @@ public class SubastaInitiator extends ContractNetInitiator {
 						return 1;
 				}
 			});
-			
+
 			// Respondemos a todas las propuestad que recibimos
 			for (int i = 0; i < responses.size(); i++) {
 
@@ -45,13 +45,11 @@ public class SubastaInitiator extends ContractNetInitiator {
 				ACLMessage msjRespuesta = ((ACLMessage) responses.get(i)).createReply();
 				if (!articuloAdjudicado && ((AgenteLonja) myAgent).suficienteDinero(respuesta.getSender(),
 						articuloActual.getPrecio())) {
-					// Aceptamos la primera propuesta que nos ha llegado si el comprador tiene suficiente dinero
+					// Aceptamos la primera propuesta que nos ha llegado si el comprador tiene
+					// suficiente dinero
 					msjRespuesta.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
 					((AgenteLonja) myAgent).articuloVendido(articuloActual, respuesta.getSender());
 					articuloAdjudicado = true;
-					// Evitamos que haya mas rondas de venta de este articulo
-					((AgenteLonja) myAgent).setEstadoSubasta(0);
-					((AgenteLonja) myAgent).setSubastaEnMarcha(false);
 					((POAAgent) myAgent).getLogger().info("Subasta", "Vendido el articulo " + articuloActual);
 				} else {
 					// Rechazamos el resto de propuestas
@@ -59,29 +57,30 @@ public class SubastaInitiator extends ContractNetInitiator {
 				}
 				acceptances.add(msjRespuesta);
 			}
-		} 
-		
+		}
+
 		// Si no recibimos respuestas o ningun comprador tiene suficiente dinero
 		if (responses.size() == 0 || !articuloAdjudicado) {
 			if (((AgenteLonja) myAgent).reducirPrecio(articuloActual)) {
 				// Si el precio sigue por encima del precio minimo, lo seguimos intentar vender
-				((POAAgent) myAgent).getLogger().info("Subasta",
-						"Reintentando subasta de articulo " + articuloActual + " con precio " + articuloActual.getPrecio());
+				((POAAgent) myAgent).getLogger().info("Subasta", "Reintentando subasta de articulo " + articuloActual
+						+ " con precio " + articuloActual.getPrecio());
 			} else {
-				// Si no, lo a�adimos a la lista de imposibles y la subasta de ese articulo se termina
+				// Si no, lo a�adimos a la lista de imposibles y la subasta de ese articulo se
+				// termina
 				((AgenteLonja) myAgent).imposibleVender(articuloActual);
-				((AgenteLonja) myAgent).setPuja(false);
 				((AgenteLonja) myAgent).setEstadoSubasta(0);
 			}
 			((AgenteLonja) myAgent).setSubastaEnMarcha(false);
 
 		}
 	}
-	
+
 	protected void handleInform(ACLMessage inform) {
-		// Cuando el comprador nos informa de que ha ha recibo el mensaje aceptando su propuesta 
-		// concluimos la subasta del articulo actual
-		((AgenteLonja) myAgent).setPuja(false);
+		// Cuando el comprador nos informa de que ha ha recibo el mensaje aceptando su
+		// propuesta concluimos la subasta del articulo actual
+		((AgenteLonja) myAgent).setEstadoSubasta(0);
+		((AgenteLonja) myAgent).setSubastaEnMarcha(false);
 	}
 
 }

@@ -41,7 +41,7 @@ public class AgenteLonja extends POAAgent {
 	private boolean subastaEnMarcha = false;
 	private int estadoSubasta = 0;
 	private int estadoCobro = 0;
-	private boolean pujaEnMarcha = false;
+	private boolean subastaProgramada = false;
 	private boolean cobroEnMarcha = false;
 
 	public void setup() {
@@ -107,35 +107,23 @@ public class AgenteLonja extends POAAgent {
 
 			@Override
 			public void action() {
-				if (estadoSubasta == 0 && !config.getArticulosParaSubastar().isEmpty()) {
+				if (estadoSubasta == 0 && !config.getArticulosParaSubastar().isEmpty() && !subastaProgramada) {
 					// Si no hay una puja en marcha, se inicia tras el periodo de latencia
-					if (!pujaEnMarcha) {
-						pujaEnMarcha = true;
-						((POAAgent) myAgent).getLogger().info("Subasta", "PAUSA ENTRE SUBASTAS");
-						articuloIteracion = config.getArticulosParaSubastar().getFirst();
-						myAgent.addBehaviour(new WakerBehaviour(myAgent, config.getPeriodoLatencia()) {
-							protected void onWake() {
-								estadoSubasta = 1;
-							}
-						});
-					}
+					((POAAgent) myAgent).getLogger().info("Subasta", "PAUSA ENTRE SUBASTAS");
+					articuloIteracion = config.getArticulosParaSubastar().getFirst();
+					myAgent.addBehaviour(new WakerBehaviour(myAgent, config.getPeriodoLatencia()) {
+						protected void onWake() {
+							estadoSubasta = 1;
+						}
+					});
+					subastaProgramada = true;
 					// Si no hay nada que hacer, dormimos el hilo
 					block(config.getPeriodoLatencia() / 5);
 
 				} else if (!config.getArticulosParaSubastar().isEmpty()) {
-
-					// TODO He comentado esto y funciona as expected. Pero dale un repaso tu
-
-//					if (articuloIteracion != config.getArticulosParaSubastar().getFirst()) {
-//						// Si vamos a subastar un nuevo articulo
-//						estadoSubasta = 0;
-//
-//					} else 
-
-					// TODO Revisar si subastaEnMarcha y pujaEnMarcha se pueden juntar
 					if (articuloIteracion != null && !subastaEnMarcha && !config.getCompradores().isEmpty()
 							&& estadoSubasta != 0) {
-
+						subastaProgramada = false;
 						subastaEnMarcha = true;
 						ACLMessage msjVendoPescado = new ACLMessage(ACLMessage.CFP);
 						for (AID aidComprador : config.getCompradores()) {
@@ -226,6 +214,14 @@ public class AgenteLonja extends POAAgent {
 		this.subastaEnMarcha = subastaEnMarcha;
 	}
 
+	public boolean isSubastaProgramada() {
+		return subastaProgramada;
+	}
+
+	public void setSubastaProgramada(boolean subastaProgramada) {
+		this.subastaProgramada = subastaProgramada;
+	}
+
 	public int getEstadoSubasta() {
 		return estadoSubasta;
 	}
@@ -291,14 +287,6 @@ public class AgenteLonja extends POAAgent {
 	public void imposibleVender(Articulo articulo) {
 		((POAAgent) this).getLogger().info("Subasta", "Articulo " + articulo + " imposible de vender");
 		config.imposibleVender(articulo);
-	}
-
-	public boolean isPuja() {
-		return pujaEnMarcha;
-	}
-
-	public void setPuja(boolean puja) {
-		this.pujaEnMarcha = puja;
 	}
 
 	public boolean isCobroEnMarcha() {
