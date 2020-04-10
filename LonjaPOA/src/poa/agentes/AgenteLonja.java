@@ -54,6 +54,7 @@ public class AgenteLonja extends POAAgent {
 				sd.setType("lonja");
 				sd.setName("lonja");
 				dfd.addServices(sd);
+
 				try {
 					DFService.register(this, dfd);
 				} catch (FIPAException e) {
@@ -77,103 +78,14 @@ public class AgenteLonja extends POAAgent {
 				addBehaviour(new AperturaCreditoLonja(this, msjAperturaCredito));
 
 				// Subasta de art�culos
-				addBehaviour(new CyclicBehaviour() {
-
-					private Articulo articuloIteracion = null;
-
-					@Override
-					public void action() {
-						if (estadoSubasta == 0 && !config.getArticulosParaSubastar().isEmpty()) {
-							if (!pujaEnMarcha) {
-								// Iniciamos una nueva puja de un nuevo articulo
-								pujaEnMarcha = true;
-								((POAAgent) myAgent).getLogger().info("Subasta", "PAUSA ENTRE SUBASTAS");
-								articuloIteracion = config.getArticulosParaSubastar().getFirst();
-								myAgent.addBehaviour(new WakerBehaviour(myAgent, config.getPeriodoLatencia()) {
-									protected void onWake() {
-										estadoSubasta = 1;
-									}
-								});
-							}
-							// Si no hay nada que hacer, nos dormimos durante un rato
-							block(config.getPeriodoLatencia() / 10);
-						} else if (!config.getArticulosParaSubastar().isEmpty()) {
-							if (articuloIteracion != config.getArticulosParaSubastar().getFirst()) {
-								// Si vamos a subastar un nuevo articulo
-								estadoSubasta = 0;
-							} else if (articuloIteracion != null && !subastaEnMarcha
-									&& !config.getCompradores().isEmpty() && estadoSubasta != 0) {
-								// Continuamos con la siguiente ronda de un mismo articulo
-								subastaEnMarcha = true;
-								ACLMessage msjVendoPescado = new ACLMessage(ACLMessage.CFP);
-								for (AID aidComprador : config.getCompradores()) {
-									msjVendoPescado.addReceiver(aidComprador);
-								}
-								try {
-									msjVendoPescado.setContentObject(articuloIteracion);
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
-								msjVendoPescado.setConversationId("Subasta");
-								msjVendoPescado.setProtocol(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET);
-								msjVendoPescado.setReplyByDate(
-										new Date(System.currentTimeMillis() + config.getVentanaOportunidad()));
-								((POAAgent) myAgent).getLogger().info("Subasta", "Iniciada subasta de articulo "
-										+ articuloIteracion + " al precio " + articuloIteracion.getPrecio());
-								myAgent.addBehaviour(new SubastaLonja(myAgent, msjVendoPescado, articuloIteracion));
-							} else {
-								// Si la subasta esta en marcha, nos dormimos
-								block(config.getPeriodoLatencia() / 10);
-							}
-						} else {
-							// Si no hay articulos para subastar, dormimos
-							block(config.getPeriodoLatencia() / 5);
-						}
-					}
-				});
+				protocoloSubasta();
 
 				// PROTOCOLO RETIRADA ARTICULO
 				MessageTemplate msjRetiradaArticulo = MessageTemplate.MatchConversationId("RetiradaArticulo");
 				addBehaviour(new RetiradaArticuloLonja(this, msjRetiradaArticulo));
 
 				// PROTOCOLO COBRO
-
-				addBehaviour(new CyclicBehaviour() {
-
-					@Override
-					public void action() {
-						if (estadoCobro == 0) {
-							myAgent.addBehaviour(new WakerBehaviour(myAgent, 1000) {
-								protected void onWake() {
-									estadoCobro = 1;
-								}
-							});
-							block(config.getPeriodoLatencia());
-						} else {
-							if (!config.getArticulosCompradosNoPagados().isEmpty() && !cobroEnMarcha) {
-								cobroEnMarcha = true;
-								LinkedList<AID> vendedores = new LinkedList<AID>(
-										config.getArticulosCompradosNoPagados().keySet());
-								AID vendedor = vendedores.getFirst();
-								if (!config.getArticulosCompradosNoPagados().get(vendedor).isEmpty()) {
-									((POAAgent) myAgent).getLogger().info("Cobro",
-											"Vamos a darle el dinero al agente " + vendedor.getLocalName());
-									ACLMessage msjCobro = new ACLMessage(ACLMessage.PROPOSE);
-									msjCobro.addReceiver(vendedor);
-									Double dinero = config.getDineroCobro(vendedor);
-									msjCobro.setContent(dinero.toString());
-									LinkedList<Articulo> articulos = new LinkedList<Articulo>(
-											config.getArticulosCompradosNoPagados().get(vendedor));
-									msjCobro.setConversationId("Cobro");
-									myAgent.addBehaviour(new CobroLonja(myAgent, msjCobro, articulos));
-								}
-
-							} else {
-								block(config.getPeriodoLatencia());
-							}
-						}
-					}
-				});
+				protocoloCobro();
 
 			}
 		} else {
@@ -183,18 +95,122 @@ public class AgenteLonja extends POAAgent {
 
 	}
 
-	private Lonja initAgentFromConfigFile(String fileName) {
-		Lonja config = null;
-		try {
-			Yaml yaml = new Yaml();
-			InputStream inputStream;
-			inputStream = new FileInputStream(fileName);
-			config = yaml.load(inputStream);
-			getLogger().info("initAgentFromConfigFile", config.toString());
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		return config;
+	private void protocoloSubasta() {
+		addBehaviour(new CyclicBehaviour() {
+
+			private Articulo articuloIteracion = null;
+
+			@Override
+			public void action() {
+				if (estadoSubasta == 0 && !config.getArticulosParaSubastar().isEmpty()) {
+					// Si no hay una puja en marcha, se inicia tras el periodo de latencia
+					if (!pujaEnMarcha) {
+						pujaEnMarcha = true;
+						((POAAgent) myAgent).getLogger().info("Subasta", "PAUSA ENTRE SUBASTAS");
+						articuloIteracion = config.getArticulosParaSubastar().getFirst();
+						myAgent.addBehaviour(new WakerBehaviour(myAgent, config.getPeriodoLatencia()) {
+							protected void onWake() {
+								estadoSubasta = 1;
+							}
+						});
+					}
+					// Si no hay nada que hacer, dormimos el hilo
+					block(config.getPeriodoLatencia() / 5);
+
+				} else if (!config.getArticulosParaSubastar().isEmpty()) {
+
+					// TODO He comentado esto y funciona as expected. Pero dale un repaso tu
+
+//					if (articuloIteracion != config.getArticulosParaSubastar().getFirst()) {
+//						// Si vamos a subastar un nuevo articulo
+//						estadoSubasta = 0;
+//
+//					} else 
+
+					// TODO Revisar si subastaEnMarcha y pujaEnMarcha se pueden juntar
+					if (articuloIteracion != null && !subastaEnMarcha && !config.getCompradores().isEmpty()
+							&& estadoSubasta != 0) {
+
+						subastaEnMarcha = true;
+						ACLMessage msjVendoPescado = new ACLMessage(ACLMessage.CFP);
+						for (AID aidComprador : config.getCompradores()) {
+							msjVendoPescado.addReceiver(aidComprador);
+						}
+
+						try {
+							msjVendoPescado.setContentObject(articuloIteracion);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+
+						msjVendoPescado.setConversationId("Subasta");
+						msjVendoPescado.setProtocol(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET);
+
+						// Ponemos el tiempo max para responder
+						msjVendoPescado
+								.setReplyByDate(new Date(System.currentTimeMillis() + config.getVentanaOportunidad()));
+
+						((POAAgent) myAgent).getLogger().info("Subasta", "Iniciada subasta de articulo "
+								+ articuloIteracion + " al precio " + articuloIteracion.getPrecio());
+
+						myAgent.addBehaviour(new SubastaLonja(myAgent, msjVendoPescado, articuloIteracion));
+					} else {
+						// Si la subasta esta en marcha, nos dormimos
+						block(config.getPeriodoLatencia() / 5);
+					}
+				} else {
+					// Si no hay articulos para subastar, dormimos el hilo
+					block(config.getPeriodoLatencia());
+				}
+			}
+		});
+	}
+
+	private void protocoloCobro() {
+		addBehaviour(new CyclicBehaviour() {
+
+			@Override
+			public void action() {
+				if (estadoCobro == 0) {
+					myAgent.addBehaviour(new WakerBehaviour(myAgent, 500) {
+						protected void onWake() {
+							estadoCobro = 1;
+						}
+					});
+					// Dormimos el hilo si ahora mismo no podemos cobrar
+					block(config.getPeriodoLatencia());
+				} else {
+					if (!config.getArticulosCompradosNoPagados().isEmpty() && !cobroEnMarcha) {
+
+						cobroEnMarcha = true;
+						LinkedList<AID> vendedores = new LinkedList<AID>(
+								config.getArticulosCompradosNoPagados().keySet());
+
+						AID vendedor = vendedores.getFirst();
+
+						if (!config.getArticulosCompradosNoPagados().get(vendedor).isEmpty()) {
+
+							((POAAgent) myAgent).getLogger().info("Cobro",
+									"Vamos a darle el dinero al agente " + vendedor.getLocalName());
+
+							ACLMessage msjCobro = new ACLMessage(ACLMessage.PROPOSE);
+							msjCobro.addReceiver(vendedor);
+							Double dinero = config.getDineroCobro(vendedor);
+							msjCobro.setContent(dinero.toString());
+							LinkedList<Articulo> articulos = new LinkedList<Articulo>(
+									config.getArticulosCompradosNoPagados().get(vendedor));
+							msjCobro.setConversationId("Cobro");
+							myAgent.addBehaviour(new CobroLonja(myAgent, msjCobro, articulos));
+						}
+
+					} else {
+						// Dormimos el hilo
+						block(config.getPeriodoLatencia());
+					}
+				}
+			}
+		});
+
 	}
 
 	public boolean isSubastaEnMarcha() {
@@ -248,6 +264,10 @@ public class AgenteLonja extends POAAgent {
 		config.articuloVendido(articulo, comprador);
 	}
 
+	/**
+	 * Reduce el precio del artículo si no ha llegado a su precio de reserva.
+	 * Devuelve true si se ha podido realizar la operación. False en otro caso.
+	 */
 	public boolean reducirPrecio(Articulo articulo) {
 		articulo.setPrecio(articulo.getPrecio() - config.getDecrementoPrecio());
 		if (articulo.getPrecio() < articulo.getPrecioReserva())
@@ -255,8 +275,12 @@ public class AgenteLonja extends POAAgent {
 		return true;
 	}
 
+	/**
+	 * Devuelve True si el comprador tiene dinero para pagar el articulo por el
+	 * precio actual. False en otro caso.
+	 */
 	public boolean suficienteDinero(AID comprador, double precio) {
-		return config.getDineroComprador(comprador) > precio;
+		return config.getDineroComprador(comprador) >= precio;
 	}
 
 	public void imposibleVender(Articulo articulo) {
@@ -290,6 +314,20 @@ public class AgenteLonja extends POAAgent {
 
 	public void setEstadoCobro(int estadoCobro) {
 		this.estadoCobro = estadoCobro;
+	}
+
+	private Lonja initAgentFromConfigFile(String fileName) {
+		Lonja config = null;
+		try {
+			Yaml yaml = new Yaml();
+			InputStream inputStream;
+			inputStream = new FileInputStream(fileName);
+			config = yaml.load(inputStream);
+			getLogger().info("initAgentFromConfigFile", config.toString());
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		return config;
 	}
 
 }

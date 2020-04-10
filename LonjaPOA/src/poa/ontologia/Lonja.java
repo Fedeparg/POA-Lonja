@@ -61,6 +61,13 @@ public class Lonja {
 		this.dineroCompradores.put(comprador, dinero);
 	}
 
+	/**
+	 * Devuelve una lista ordenada con los articulos listos para ser subastados. El
+	 * orden es decidido mediante la hora de registro en la lonja, siendo el primero
+	 * registrado el que aparece primero.
+	 * 
+	 * @return Lista ordenada mediante la hora de registro del articulo
+	 */
 	public LinkedList<Articulo> getArticulosParaSubastar() {
 		LinkedList<Articulo> articulos = new LinkedList<Articulo>(articulosParaSubastar.keySet());
 		articulos.sort(new Comparator<Articulo>() {
@@ -104,6 +111,13 @@ public class Lonja {
 		this.decrementoPrecio = decrementoPrecio;
 	}
 
+	/**
+	 * Este metodo es llamado cada vez que un artículo es vendido. Resta el dinero
+	 * al comprador y procesa el articulo para mantener un seguimiento del mismo.
+	 * 
+	 * @param articulo  que se ha vendido
+	 * @param comprador que ha comprado el articulo
+	 */
 	public void articuloVendido(Articulo articulo, AID comprador) {
 		AID vendedor = articulosParaSubastar.get(articulo);
 		Double dineroComprador = dineroCompradores.get(comprador);
@@ -122,12 +136,26 @@ public class Lonja {
 		}
 	}
 
+	/**
+	 * Elimina el articulo que no ha podido venderse de la lista de articulos para
+	 * subastar y lo almacena en una lista propia para realizar un seguimiento del
+	 * mismo
+	 * 
+	 * @param articulo que no ha podido venderse
+	 */
 	public void imposibleVender(Articulo articulo) {
 		AID vendedor = articulosParaSubastar.get(articulo);
 		articulosParaSubastar.remove(articulo);
 		articulosImposiblesDeVender.put(articulo, vendedor);
 	}
 
+	/**
+	 * Devuelve el dinero TOTAL de todos los articulos pertenecientes al vendedor
+	 * que se han vendido.
+	 * 
+	 * @param vendedor del que queremos obtener el total de ganancias
+	 * @return la suma del dinero de todos los articulos vendidos
+	 */
 	public double getDineroCobro(AID vendedor) {
 		LinkedList<Articulo> ventas = articulosCompradosNoPagados.get(vendedor);
 		Double dinero = 0.0;
@@ -137,10 +165,18 @@ public class Lonja {
 		return dinero;
 	}
 
+	/**
+	 * Elimina los articulos ya cobrados y deja de hacerles un seguimiento, pues ya
+	 * han sido vendidos y cobrados.
+	 * 
+	 * @param vendedor  cuyo articulo/s ya se ha/n cobrado
+	 * @param articulos que ya han sido cobrados
+	 */
 	public void eliminarArticulosCobrados(AID vendedor, LinkedList<Articulo> articulos) {
 		synchronized (articulosCompradosNoPagados) {
 			LinkedList<Articulo> articulosVendedor = articulosCompradosNoPagados.get(vendedor);
 			articulosVendedor.removeAll(articulos);
+
 			if (articulosVendedor.isEmpty()) {
 				articulosCompradosNoPagados.remove(vendedor);
 			} else {
