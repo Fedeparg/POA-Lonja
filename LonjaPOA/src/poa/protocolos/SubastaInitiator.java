@@ -21,14 +21,14 @@ public class SubastaInitiator extends ContractNetInitiator {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	protected void handleAllResponses(Vector respuestas, Vector aceptaciones) {
-		((POAAgent) myAgent).getLogger().info("Subasta", "Recibidas " + respuestas.size() + " peticiones de compra");
+	protected void handleAllResponses(Vector responses, Vector acceptances) {
+		((POAAgent) myAgent).getLogger().info("Subasta", "Recibidas " + responses.size() + " peticiones de compra");
 		boolean articuloAdjudicado = false;
 		
-		if (respuestas.size() > 0) {
+		if (responses.size() > 0) {
 
 			// Ordenamos las respuestas por fecha de envio
-			respuestas.sort(new Comparator<ACLMessage>() {
+			responses.sort(new Comparator<ACLMessage>() {
 				@Override
 				public int compare(ACLMessage arg0, ACLMessage arg1) {
 					if (arg0.getPostTimeStamp() > arg1.getPostTimeStamp())
@@ -39,10 +39,10 @@ public class SubastaInitiator extends ContractNetInitiator {
 			});
 			
 			// Respondemos a todas las propuestad que recibimos
-			for (int i = 0; i < respuestas.size(); i++) {
+			for (int i = 0; i < responses.size(); i++) {
 
-				ACLMessage respuesta = (ACLMessage) respuestas.get(i);
-				ACLMessage msjRespuesta = ((ACLMessage) respuestas.get(i)).createReply();
+				ACLMessage respuesta = (ACLMessage) responses.get(i);
+				ACLMessage msjRespuesta = ((ACLMessage) responses.get(i)).createReply();
 				if (!articuloAdjudicado && ((AgenteLonja) myAgent).suficienteDinero(respuesta.getSender(),
 						articuloActual.getPrecio())) {
 					// Aceptamos la primera propuesta que nos ha llegado si el comprador tiene suficiente dinero
@@ -57,12 +57,12 @@ public class SubastaInitiator extends ContractNetInitiator {
 					// Rechazamos el resto de propuestas
 					msjRespuesta.setPerformative(ACLMessage.REJECT_PROPOSAL);
 				}
-				aceptaciones.add(msjRespuesta);
+				acceptances.add(msjRespuesta);
 			}
 		} 
 		
 		// Si no recibimos respuestas o ningun comprador tiene suficiente dinero
-		if (respuestas.size() == 0 || !articuloAdjudicado) {
+		if (responses.size() == 0 || !articuloAdjudicado) {
 			if (((AgenteLonja) myAgent).reducirPrecio(articuloActual)) {
 				// Si el precio sigue por encima del precio minimo, lo seguimos intentar vender
 				((POAAgent) myAgent).getLogger().info("Subasta",

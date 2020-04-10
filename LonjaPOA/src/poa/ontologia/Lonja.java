@@ -6,6 +6,11 @@ import java.util.LinkedList;
 
 import jade.core.AID;
 
+/**
+ * Representa la lonja y mantiene toda la información necesaria para el
+ * mismo.
+ * 
+ */
 public class Lonja {
 
 	private LinkedList<AID> vendedores = new LinkedList<AID>();

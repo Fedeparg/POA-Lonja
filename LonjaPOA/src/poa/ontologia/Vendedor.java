@@ -5,6 +5,11 @@ import java.util.LinkedList;
 import jade.core.AID;
 import jade.util.leap.Serializable;
 
+/**
+ * Representa un vendedor y mantiene toda la información necesaria para el
+ * mismo.
+ * 
+ */
 @SuppressWarnings("serial")
 public class Vendedor implements Serializable {
 

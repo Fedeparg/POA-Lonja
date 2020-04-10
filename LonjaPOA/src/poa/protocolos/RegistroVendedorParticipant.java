@@ -18,22 +18,22 @@ public class RegistroVendedorParticipant extends AchieveREResponder {
 		super(a, mt);
 	}
 
-	protected ACLMessage handleRequest(ACLMessage msjRegistro) throws NotUnderstoodException, RefuseException {
+	protected ACLMessage handleRequest(ACLMessage request) throws NotUnderstoodException, RefuseException {
 		((POAAgent) myAgent).getLogger().info("AdmisionVendedor", "Recibida peticion de registro vendedor de "
-				+ msjRegistro.getSender().getLocalName());
+				+ request.getSender().getLocalName());
 		Vendedor vendedor = null;
 		try {
-			vendedor = (Vendedor) msjRegistro.getContentObject();
+			vendedor = (Vendedor) request.getContentObject();
 		} catch (UnreadableException e) {
 			System.out.println("Fallo al sacar el vendedor del mensaje de registro");
 			e.printStackTrace();
 		}
 		// A�adimos el vendedor a lista de vendedores y enviamos la respuesta
-		ACLMessage msjRespuesta = msjRegistro.createReply();
-		if (vendedor != null && !((AgenteLonja) this.myAgent).containsVendedor(msjRegistro.getSender())) {
-			((AgenteLonja) this.myAgent).addVendedor(msjRegistro.getSender());
+		ACLMessage msjRespuesta = request.createReply();
+		if (vendedor != null && !((AgenteLonja) this.myAgent).containsVendedor(request.getSender())) {
+			((AgenteLonja) this.myAgent).addVendedor(request.getSender());
 			((POAAgent) myAgent).getLogger().info("AdmisionVendedor", "Añadido vendedor "
-					+ msjRegistro.getSender().getLocalName());	
+					+ request.getSender().getLocalName());	
 			msjRespuesta.setPerformative(ACLMessage.INFORM);
 			msjRespuesta.setContent("Registrado correctamente");
 		} else {

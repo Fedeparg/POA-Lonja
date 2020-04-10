@@ -20,8 +20,11 @@ public class CobroParticipant extends ProposeResponder {
 		ACLMessage reply = propose.createReply();
 		Double dinero = Double.parseDouble(propose.getContent());
 		((AgenteVendedor) myAgent).addGanancias(dinero);
+		
 		reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
+		
 		((POAAgent) myAgent).getLogger().info("Cobro", "He recibido el dinero" + dinero);
+		
 		return reply;
 	}
 

@@ -13,16 +13,16 @@ public class RegistroVendedorInitiator extends AchieveREInitiator {
 		super(a, msg);
 	}
 
-	protected void handleInform(ACLMessage msjRegistroExito) {
+	protected void handleInform(ACLMessage inform) {
 
 		((POAAgent) myAgent).getLogger().info("AdmisionVendedor",
-				"Recibido mensaje de aceptacion registro en " + msjRegistroExito.getSender().getLocalName());
+				"Recibido mensaje de aceptacion registro en " + inform.getSender().getLocalName());
 		((AgenteVendedor) myAgent).removeSequentialBehaviour(this);
 	}
 
-	protected void handleFailure(ACLMessage msjRegistroFallo) {
+	protected void handleFailure(ACLMessage failure) {
 		((POAAgent) myAgent).getLogger().info("AdmisionVendedor",
-				"Recibido mensaje de fallo en registro en " + msjRegistroFallo.getSender().getLocalName());
+				"Recibido mensaje de fallo en registro en " + failure.getSender().getLocalName());
 	}
 	
 }

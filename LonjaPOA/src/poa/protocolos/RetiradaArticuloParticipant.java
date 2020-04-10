@@ -9,10 +9,8 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import jade.proto.AchieveREResponder;
-import poa.agentes.AgenteLonja;
 import poa.agentes.POAAgent;
 import poa.ontologia.Articulo;
-import poa.ontologia.Vendedor;
 
 @SuppressWarnings("serial")
 public class RetiradaArticuloParticipant extends AchieveREResponder {
@@ -21,18 +19,18 @@ public class RetiradaArticuloParticipant extends AchieveREResponder {
 		super(a, mt);
 	}
 
-	protected ACLMessage handleRequest(ACLMessage msjRetiradaArticulo) throws NotUnderstoodException, RefuseException {
+	protected ACLMessage handleRequest(ACLMessage request) throws NotUnderstoodException, RefuseException {
 		((POAAgent) myAgent).getLogger().info("RetiradaArticulo",
-				"Recibida peticion de retirada de " + msjRetiradaArticulo.getSender().getLocalName());
+				"Recibida peticion de retirada de " + request.getSender().getLocalName());
 		Articulo articulo = null;
 		try {
-			articulo = (Articulo) msjRetiradaArticulo.getContentObject();
+			articulo = (Articulo) request.getContentObject();
 		} catch (UnreadableException e) {
 			System.out.println("Fallo al sacar el articulo del mensaje de registro");
 			e.printStackTrace();
 		}
 		// A�adimos el vendedor a lista de vendedores y enviamos la respuesta
-		ACLMessage msjRespuesta = msjRetiradaArticulo.createReply();
+		ACLMessage msjRespuesta = request.createReply();
 		if (articulo != null) {
 			msjRespuesta.setPerformative(ACLMessage.INFORM);
 			try {

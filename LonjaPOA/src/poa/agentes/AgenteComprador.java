@@ -73,20 +73,8 @@ public class AgenteComprador extends POAAgent {
 				seq.addSubBehaviour(protocoloRegistroComprador());
 
 				// PROTOCOLO APERTURA CREDITO
-				if (config.getDinero() > 0) {
-					ACLMessage mensajeAperturaCredito = new ACLMessage(ACLMessage.REQUEST);
-					mensajeAperturaCredito.addReceiver(lonja);
-					try {
-						mensajeAperturaCredito.setContentObject(config.getDinero());
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					mensajeAperturaCredito.setConversationId("AperturaCredito");
-					mensajeAperturaCredito.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
-					System.out.println(this.getLocalName() + ": Enviada solicitud de apertura credito a lonja"
-							+ lonja.getLocalName());
-					seq.addSubBehaviour(new AperturaCreditoInitiator(this, mensajeAperturaCredito));
-				}
+				seq.addSubBehaviour(protocoloAperturaCredito());
+
 				addBehaviour(seq);
 
 				// PROTOCOLO SUBASTA
@@ -96,6 +84,7 @@ public class AgenteComprador extends POAAgent {
 
 				// PROTOCOLO RETIRADA DE ARTICULOS
 				protocoloRetiradaArticulos();
+
 			} else {
 				doDelete();
 			}
@@ -106,7 +95,7 @@ public class AgenteComprador extends POAAgent {
 
 	}
 
-	public Behaviour protocoloRegistroComprador() {
+	private Behaviour protocoloRegistroComprador() {
 		ACLMessage msgRegistro = new ACLMessage(ACLMessage.REQUEST);
 		msgRegistro.addReceiver(lonja);
 		try {
@@ -122,38 +111,47 @@ public class AgenteComprador extends POAAgent {
 		return new RegistroCompradorInitiator(this, msgRegistro);
 	}
 
-	public void protocoloRetiradaArticulos() {
+	private Behaviour protocoloAperturaCredito() {
+		ACLMessage mensajeAperturaCredito = new ACLMessage(ACLMessage.REQUEST);
+		mensajeAperturaCredito.addReceiver(lonja);
+		try {
+			mensajeAperturaCredito.setContentObject(config.getDinero());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		mensajeAperturaCredito.setConversationId("AperturaCredito");
+		mensajeAperturaCredito.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
+		System.out.println(
+				this.getLocalName() + ": Enviada solicitud de apertura credito a lonja" + lonja.getLocalName());
+		return new AperturaCreditoInitiator(this, mensajeAperturaCredito);
+	}
+
+	private void protocoloRetiradaArticulos() {
 
 		addBehaviour(new CyclicBehaviour() {
-			private int state = 0;
 
 			@Override
 			public void action() {
-				// Para no estar intentado retirar aritculos constantemente
-				if (state == 0) {
-					block(1000);
-					state++;
-				} else {
-					if (!config.getPendienteRetirada().isEmpty() && !retiradaEnMarcha) {
-						retiradaEnMarcha = true;
-						ACLMessage msjRetiradaArticulo = new ACLMessage(ACLMessage.REQUEST);
-						msjRetiradaArticulo.addReceiver(lonja);
-						try {
-							msjRetiradaArticulo.setContentObject(config.getPendienteRetirada().getFirst());
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						msjRetiradaArticulo.setConversationId("RetiradaArticulo");
-						msjRetiradaArticulo.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
-						((POAAgent) myAgent).getLogger().info("RetiradaArticulo",
-								"Retirando articulo " + config.getPendienteRetirada().getFirst());
-						myAgent.addBehaviour(new RetiradaArticuloInitiator(myAgent, msjRetiradaArticulo,
-								config.getPendienteRetirada().getFirst()));
-					} else {
-						state = 0;
+				// Si no podemos retirar un articulo, esperamos
+				if (!config.getPendienteRetirada().isEmpty() && !retiradaEnMarcha) {
+					retiradaEnMarcha = true;
+					ACLMessage msjRetiradaArticulo = new ACLMessage(ACLMessage.REQUEST);
+					msjRetiradaArticulo.addReceiver(lonja);
+					try {
+						msjRetiradaArticulo.setContentObject(config.getPendienteRetirada().getFirst());
+					} catch (IOException e) {
+						e.printStackTrace();
 					}
-
+					msjRetiradaArticulo.setConversationId("RetiradaArticulo");
+					msjRetiradaArticulo.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
+					((POAAgent) myAgent).getLogger().info("RetiradaArticulo",
+							"Retirando articulo " + config.getPendienteRetirada().getFirst());
+					myAgent.addBehaviour(new RetiradaArticuloInitiator(myAgent, msjRetiradaArticulo,
+							config.getPendienteRetirada().getFirst()));
+				} else {
+					block(1000);
 				}
+
 			}
 		});
 	}

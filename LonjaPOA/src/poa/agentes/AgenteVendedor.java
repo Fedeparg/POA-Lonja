@@ -24,8 +24,8 @@ import poa.protocolos.CobroParticipant;
 import poa.protocolos.DepositoArticuloInitiator;
 
 /**
- * Representación del vendedor en Jade. Arranca sus comportamientos y realiza las
- * interacciones con los demás agentes.
+ * Representación del vendedor en Jade. Arranca sus comportamientos y realiza
+ * las interacciones con los demás agentes.
  *
  */
 @SuppressWarnings("serial")
@@ -111,6 +111,23 @@ public class AgenteVendedor extends POAAgent {
 
 	}
 
+	public void addGanancias(Double dinero) {
+		config.setGanancias(config.getGanancias() + dinero);
+	}
+
+	/**
+	 * Eliminamos el comportamiento del secuencial cuando ha terminado. Si no quedan
+	 * más comportamientos, eliminamos el propio secuencial.
+	 * 
+	 * @param behaviour que queremos eliminar
+	 */
+	public void removeSequentialBehaviour(Behaviour bh) {
+		seq.removeSubBehaviour(bh);
+		if (seq.getChildren().isEmpty()) {
+			removeBehaviour(seq);
+		}
+	}
+
 	private Vendedor initAgentFromConfigFile(String fileName) {
 		Vendedor config = null;
 		try {
@@ -123,21 +140,5 @@ public class AgenteVendedor extends POAAgent {
 			e.printStackTrace();
 		}
 		return config;
-	}
-
-	public void addGanancias(Double dinero) {
-		config.setGanancias(config.getGanancias() + dinero);
-	}
-
-	/**
-	 * Eliminamos el comportamiento cuando ha terminado
-	 * 
-	 * @param bh
-	 */
-	public void removeSequentialBehaviour(Behaviour bh) {
-		seq.removeSubBehaviour(bh);
-		if (seq.getChildren().isEmpty()) {
-			removeBehaviour(seq);
-		}
 	}
 }
