@@ -11,11 +11,11 @@ import poa.agentes.POAAgent;
 import poa.ontologia.Articulo;
 
 @SuppressWarnings("serial")
-public class SubastaLonja extends ContractNetInitiator {
+public class SubastaInitiator extends ContractNetInitiator {
 
 	private Articulo articuloActual;
 
-	public SubastaLonja(Agent a, ACLMessage cfp, Articulo articuloActual) {
+	public SubastaInitiator(Agent a, ACLMessage cfp, Articulo articuloActual) {
 		super(a, cfp);
 		this.articuloActual = articuloActual;
 	}

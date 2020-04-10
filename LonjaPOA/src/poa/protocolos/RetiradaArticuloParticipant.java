@@ -15,16 +15,16 @@ import poa.ontologia.Articulo;
 import poa.ontologia.Vendedor;
 
 @SuppressWarnings("serial")
-public class RetiradaArticuloLonja extends AchieveREResponder {
+public class RetiradaArticuloParticipant extends AchieveREResponder {
 
-	public RetiradaArticuloLonja(Agent a, MessageTemplate mt) {
+	public RetiradaArticuloParticipant(Agent a, MessageTemplate mt) {
 		super(a, mt);
 	}
 
 	protected ACLMessage handleRequest(ACLMessage msjRetiradaArticulo) throws NotUnderstoodException, RefuseException {
-		((POAAgent) myAgent).getLogger().info("RetiradaArticulo", "Recibida peticion de retirada de "
-				+ msjRetiradaArticulo.getSender().getLocalName());
-		Articulo articulo= null;
+		((POAAgent) myAgent).getLogger().info("RetiradaArticulo",
+				"Recibida peticion de retirada de " + msjRetiradaArticulo.getSender().getLocalName());
+		Articulo articulo = null;
 		try {
 			articulo = (Articulo) msjRetiradaArticulo.getContentObject();
 		} catch (UnreadableException e) {
@@ -33,7 +33,7 @@ public class RetiradaArticuloLonja extends AchieveREResponder {
 		}
 		// A�adimos el vendedor a lista de vendedores y enviamos la respuesta
 		ACLMessage msjRespuesta = msjRetiradaArticulo.createReply();
-		if (articulo != null) {	
+		if (articulo != null) {
 			msjRespuesta.setPerformative(ACLMessage.INFORM);
 			try {
 				msjRespuesta.setContentObject(articulo);

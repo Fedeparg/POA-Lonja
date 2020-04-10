@@ -20,15 +20,20 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.MessageTemplate;
 import poa.ontologia.Articulo;
 import poa.ontologia.Lonja;
-import poa.protocolos.AdmisionCompradorP;
-import poa.protocolos.AdmisionVendedorP;
-import poa.protocolos.AperturaCreditoLonja;
-import poa.protocolos.CobroLonja;
-import poa.protocolos.DepositoArticuloP;
-import poa.protocolos.RetiradaArticuloLonja;
-import poa.protocolos.SubastaLonja;
+import poa.protocolos.RegistroCompradorParticipant;
+import poa.protocolos.RegistroVendedorParticipant;
+import poa.protocolos.AperturaCreditoParticipant;
+import poa.protocolos.CobroInitiator;
+import poa.protocolos.DepositoArticuloParticipant;
+import poa.protocolos.RetiradaArticuloParticipant;
+import poa.protocolos.SubastaInitiator;
 import jade.lang.acl.ACLMessage;
 
+/**
+ * Representación de la Lonja en Jade. Arranca sus comportamientos y realiza las
+ * interacciones con los demás agentes.
+ *
+ */
 @SuppressWarnings("serial")
 public class AgenteLonja extends POAAgent {
 
@@ -63,26 +68,26 @@ public class AgenteLonja extends POAAgent {
 
 				// Registro vendedor
 				MessageTemplate msjRegistroVendedor = MessageTemplate.MatchConversationId("RegistroVendedor");
-				addBehaviour(new AdmisionVendedorP(this, msjRegistroVendedor));
+				addBehaviour(new RegistroVendedorParticipant(this, msjRegistroVendedor));
 
 				// Registro comprador
 				MessageTemplate msjRegistroComprador = MessageTemplate.MatchConversationId("RegistroComprador");
-				addBehaviour(new AdmisionCompradorP(this, msjRegistroComprador));
+				addBehaviour(new RegistroCompradorParticipant(this, msjRegistroComprador));
 
 				// Deposito de articulos
 				MessageTemplate msjDeposito = MessageTemplate.MatchConversationId("DepositoArticulo");
-				addBehaviour(new DepositoArticuloP(this, msjDeposito));
+				addBehaviour(new DepositoArticuloParticipant(this, msjDeposito));
 
 				// Apertura Credito
 				MessageTemplate msjAperturaCredito = MessageTemplate.MatchConversationId("AperturaCredito");
-				addBehaviour(new AperturaCreditoLonja(this, msjAperturaCredito));
+				addBehaviour(new AperturaCreditoParticipant(this, msjAperturaCredito));
 
 				// Subasta de art�culos
 				protocoloSubasta();
 
 				// PROTOCOLO RETIRADA ARTICULO
 				MessageTemplate msjRetiradaArticulo = MessageTemplate.MatchConversationId("RetiradaArticulo");
-				addBehaviour(new RetiradaArticuloLonja(this, msjRetiradaArticulo));
+				addBehaviour(new RetiradaArticuloParticipant(this, msjRetiradaArticulo));
 
 				// PROTOCOLO COBRO
 				protocoloCobro();
@@ -153,7 +158,7 @@ public class AgenteLonja extends POAAgent {
 						((POAAgent) myAgent).getLogger().info("Subasta", "Iniciada subasta de articulo "
 								+ articuloIteracion + " al precio " + articuloIteracion.getPrecio());
 
-						myAgent.addBehaviour(new SubastaLonja(myAgent, msjVendoPescado, articuloIteracion));
+						myAgent.addBehaviour(new SubastaInitiator(myAgent, msjVendoPescado, articuloIteracion));
 					} else {
 						// Si la subasta esta en marcha, nos dormimos
 						block(config.getPeriodoLatencia() / 5);
@@ -200,7 +205,7 @@ public class AgenteLonja extends POAAgent {
 							LinkedList<Articulo> articulos = new LinkedList<Articulo>(
 									config.getArticulosCompradosNoPagados().get(vendedor));
 							msjCobro.setConversationId("Cobro");
-							myAgent.addBehaviour(new CobroLonja(myAgent, msjCobro, articulos));
+							myAgent.addBehaviour(new CobroInitiator(myAgent, msjCobro, articulos));
 						}
 
 					} else {

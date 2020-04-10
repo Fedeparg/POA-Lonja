@@ -9,10 +9,10 @@ import poa.agentes.POAAgent;
 import poa.ontologia.Articulo;
 
 @SuppressWarnings("serial")
-public class RetiradaArticuloComprador extends AchieveREInitiator {
+public class RetiradaArticuloInitiator extends AchieveREInitiator {
 	Articulo articulo = null;
 	
-	public RetiradaArticuloComprador(Agent a, ACLMessage msg, Articulo articulo) {
+	public RetiradaArticuloInitiator(Agent a, ACLMessage msg, Articulo articulo) {
 		super(a, msg);
 		this.articulo = articulo;
 	}

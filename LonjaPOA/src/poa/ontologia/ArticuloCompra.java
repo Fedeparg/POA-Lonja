@@ -2,6 +2,11 @@ package poa.ontologia;
 
 import jade.util.leap.Serializable;
 
+/**
+ * Version especial de Articulo (no relacionada) para el comprador. De esta
+ * forma, el comprador no tiene acceso a información que no le es necesaria.
+ * 
+ */
 @SuppressWarnings("serial")
 public class ArticuloCompra implements Serializable {
 

@@ -15,9 +15,9 @@ import poa.ontologia.Articulo;
 import java.io.IOException;
 
 @SuppressWarnings("serial")
-public class SubastaComprador extends ContractNetResponder {
+public class SubastaParticipant extends ContractNetResponder {
 
-	public SubastaComprador(Agent a, MessageTemplate mt) {
+	public SubastaParticipant(Agent a, MessageTemplate mt) {
 		super(a, mt);
 	}
 

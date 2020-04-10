@@ -20,11 +20,16 @@ import jade.lang.acl.MessageTemplate;
 import poa.ontologia.Articulo;
 import poa.ontologia.ArticuloCompra;
 import poa.ontologia.Comprador;
-import poa.protocolos.AdmisionCompradorI;
-import poa.protocolos.AperturaCreditoComprador;
-import poa.protocolos.RetiradaArticuloComprador;
-import poa.protocolos.SubastaComprador;
+import poa.protocolos.RegistroCompradorInitiator;
+import poa.protocolos.AperturaCreditoInitiator;
+import poa.protocolos.RetiradaArticuloInitiator;
+import poa.protocolos.SubastaParticipant;
 
+/**
+ * La representación del comprador en Jade. Arranca sus comportamientos y
+ * realiza las interacciones con los demás agentes.
+ *
+ */
 @SuppressWarnings("serial")
 public class AgenteComprador extends POAAgent {
 
@@ -50,6 +55,7 @@ public class AgenteComprador extends POAAgent {
 				sd.setType("lonja");
 				template.addServices(sd);
 				DFAgentDescription[] result;
+
 				do {
 					try {
 						result = DFService.search(this, template);
@@ -64,18 +70,7 @@ public class AgenteComprador extends POAAgent {
 				lonja = lonjas[0];
 
 				// PROTOCOLO REGISTRO
-				ACLMessage mensajeRegistro = new ACLMessage(ACLMessage.REQUEST);
-				mensajeRegistro.addReceiver(lonja);
-				try {
-					mensajeRegistro.setContentObject(config);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				mensajeRegistro.setConversationId("RegistroComprador");
-				mensajeRegistro.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
-				System.out.println(this.getLocalName() + ": Enviando peticion de registro a lonja "
-						+ lonja.getLocalName() + " como comprador");
-				seq.addSubBehaviour(new AdmisionCompradorI(this, mensajeRegistro));
+				seq.addSubBehaviour(protocoloRegistroComprador());
 
 				// PROTOCOLO APERTURA CREDITO
 				if (config.getDinero() > 0) {
@@ -90,48 +85,17 @@ public class AgenteComprador extends POAAgent {
 					mensajeAperturaCredito.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
 					System.out.println(this.getLocalName() + ": Enviada solicitud de apertura credito a lonja"
 							+ lonja.getLocalName());
-					seq.addSubBehaviour(new AperturaCreditoComprador(this, mensajeAperturaCredito));
+					seq.addSubBehaviour(new AperturaCreditoInitiator(this, mensajeAperturaCredito));
 				}
 				addBehaviour(seq);
 
 				// PROTOCOLO SUBASTA
 
 				MessageTemplate msjPuja = MessageTemplate.MatchConversationId("Subasta");
-				addBehaviour(new SubastaComprador(this, msjPuja));
+				addBehaviour(new SubastaParticipant(this, msjPuja));
 
 				// PROTOCOLO RETIRADA DE ARTICULOS
-				addBehaviour(new CyclicBehaviour() {
-					private int state = 0;
-
-					@Override
-					public void action() {
-						// Para no estar intentado retirar arituclos constantemente
-						if (state == 0) {
-							block(1000);
-							state++;
-						} else {
-							if (!config.getPendienteRetirada().isEmpty() && !retiradaEnMarcha) {
-								retiradaEnMarcha = true;
-								ACLMessage msjRetiradaArticulo = new ACLMessage(ACLMessage.REQUEST);
-								msjRetiradaArticulo.addReceiver(lonja);
-								try {
-									msjRetiradaArticulo.setContentObject(config.getPendienteRetirada().getFirst());
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
-								msjRetiradaArticulo.setConversationId("RetiradaArticulo");
-								msjRetiradaArticulo.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
-								((POAAgent) myAgent).getLogger().info("RetiradaArticulo",
-										"Retirando articulo " + config.getPendienteRetirada().getFirst());
-								myAgent.addBehaviour(new RetiradaArticuloComprador(myAgent, msjRetiradaArticulo,
-										config.getPendienteRetirada().getFirst()));
-							} else {
-								state = 0;
-							}
-
-						}
-					}
-				});
+				protocoloRetiradaArticulos();
 			} else {
 				doDelete();
 			}
@@ -142,18 +106,56 @@ public class AgenteComprador extends POAAgent {
 
 	}
 
-	private Comprador initAgentFromConfigFile(String fileName) {
-		Comprador config = null;
+	public Behaviour protocoloRegistroComprador() {
+		ACLMessage msgRegistro = new ACLMessage(ACLMessage.REQUEST);
+		msgRegistro.addReceiver(lonja);
 		try {
-			Yaml yaml = new Yaml();
-			InputStream inputStream;
-			inputStream = new FileInputStream(fileName);
-			config = yaml.load(inputStream);
-			getLogger().info("initAgentFromConfigFile", config.toString());
-		} catch (FileNotFoundException e) {
+			msgRegistro.setContentObject(config);
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return config;
+		msgRegistro.setConversationId("RegistroComprador");
+		msgRegistro.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
+		System.out.println(this.getLocalName() + ": Enviando peticion de registro a lonja " + lonja.getLocalName()
+				+ " como comprador");
+
+		return new RegistroCompradorInitiator(this, msgRegistro);
+	}
+
+	public void protocoloRetiradaArticulos() {
+
+		addBehaviour(new CyclicBehaviour() {
+			private int state = 0;
+
+			@Override
+			public void action() {
+				// Para no estar intentado retirar aritculos constantemente
+				if (state == 0) {
+					block(1000);
+					state++;
+				} else {
+					if (!config.getPendienteRetirada().isEmpty() && !retiradaEnMarcha) {
+						retiradaEnMarcha = true;
+						ACLMessage msjRetiradaArticulo = new ACLMessage(ACLMessage.REQUEST);
+						msjRetiradaArticulo.addReceiver(lonja);
+						try {
+							msjRetiradaArticulo.setContentObject(config.getPendienteRetirada().getFirst());
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						msjRetiradaArticulo.setConversationId("RetiradaArticulo");
+						msjRetiradaArticulo.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
+						((POAAgent) myAgent).getLogger().info("RetiradaArticulo",
+								"Retirando articulo " + config.getPendienteRetirada().getFirst());
+						myAgent.addBehaviour(new RetiradaArticuloInitiator(myAgent, msjRetiradaArticulo,
+								config.getPendienteRetirada().getFirst()));
+					} else {
+						state = 0;
+					}
+
+				}
+			}
+		});
 	}
 
 	public void cambiarDinero(Double dinero) {
@@ -181,20 +183,35 @@ public class AgenteComprador extends POAAgent {
 		return retiradaEnMarcha;
 	}
 
-	public void setRetiradaEnMarcha(boolean retiradaEnMarcha) {
-		this.retiradaEnMarcha = retiradaEnMarcha;
+	public void setRetiradaEnMarcha(boolean estadoRetirada) {
+		this.retiradaEnMarcha = estadoRetirada;
 	}
 
 	/**
-	 * Eliminamos el comportamiento cuando ha terminado
+	 * Eliminamos el comportamiento del secuencial cuando ha terminado. Si no quedan
+	 * más comportamientos, eliminamos el propio secuencial.
 	 * 
-	 * @param bh
+	 * @param behaviour que queremos eliminar
 	 */
-	public void removeSequentialBehaviour(Behaviour bh) {
-		seq.removeSubBehaviour(bh);
+	public void removeSequentialBehaviour(Behaviour behaviour) {
+		seq.removeSubBehaviour(behaviour);
 		if (seq.getChildren().isEmpty()) {
 			removeBehaviour(seq);
 		}
+	}
+
+	private Comprador initAgentFromConfigFile(String fileName) {
+		Comprador config = null;
+		try {
+			Yaml yaml = new Yaml();
+			InputStream inputStream;
+			inputStream = new FileInputStream(fileName);
+			config = yaml.load(inputStream);
+			getLogger().info("initAgentFromConfigFile", config.toString());
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		return config;
 	}
 
 }

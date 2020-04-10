@@ -10,9 +10,9 @@ import poa.agentes.POAAgent;
 import poa.ontologia.Articulo;
 
 @SuppressWarnings("serial")
-public class DepositoArticuloP extends AchieveREResponder {
+public class DepositoArticuloParticipant extends AchieveREResponder {
 
-	public DepositoArticuloP(Agent a, MessageTemplate mt) {
+	public DepositoArticuloParticipant(Agent a, MessageTemplate mt) {
 		super(a, mt);
 	}
 

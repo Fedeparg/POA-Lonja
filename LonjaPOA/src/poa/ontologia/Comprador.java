@@ -5,6 +5,11 @@ import java.util.LinkedList;
 
 import jade.util.leap.Serializable;
 
+/**
+ * Representa un comprador y mantiene toda la información necesaria para el
+ * mismo.
+ * 
+ */
 @SuppressWarnings("serial")
 public class Comprador implements Serializable {
 	private LinkedList<ArticuloCompra> listaCompra; // Pescadico a comprar

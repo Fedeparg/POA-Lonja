@@ -19,10 +19,15 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import poa.ontologia.Articulo;
 import poa.ontologia.Vendedor;
-import poa.protocolos.AdmisionVendedorI;
-import poa.protocolos.CobroVendedor;
-import poa.protocolos.DepositoArticuloI;
+import poa.protocolos.RegistroVendedorInitiator;
+import poa.protocolos.CobroParticipant;
+import poa.protocolos.DepositoArticuloInitiator;
 
+/**
+ * Representación del vendedor en Jade. Arranca sus comportamientos y realiza las
+ * interacciones con los demás agentes.
+ *
+ */
 @SuppressWarnings("serial")
 public class AgenteVendedor extends POAAgent {
 
@@ -72,7 +77,7 @@ public class AgenteVendedor extends POAAgent {
 					mensajeRegistro.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
 					System.out.println(
 							this.getLocalName() + ": Enviando peticion de registro a lonja " + lonja.getLocalName());
-					seq.addSubBehaviour(new AdmisionVendedorI(this, mensajeRegistro));
+					seq.addSubBehaviour(new RegistroVendedorInitiator(this, mensajeRegistro));
 				}
 
 				// Enviamos los mensajes para depositar articulos en la lonja
@@ -88,13 +93,13 @@ public class AgenteVendedor extends POAAgent {
 					mensajeDeposito.setConversationId("DepositoArticulo");
 					mensajeDeposito.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
 					System.out.println(this.getLocalName() + ": Enviando peticion de deposito de articulo");
-					seq.addSubBehaviour(new DepositoArticuloI(this, mensajeDeposito));
+					seq.addSubBehaviour(new DepositoArticuloInitiator(this, mensajeDeposito));
 				}
 
 				addBehaviour(seq);
 
 				MessageTemplate msjCobro = MessageTemplate.MatchConversationId("Cobro");
-				addBehaviour(new CobroVendedor(this, msjCobro));
+				addBehaviour(new CobroParticipant(this, msjCobro));
 
 			} else {
 				doDelete();

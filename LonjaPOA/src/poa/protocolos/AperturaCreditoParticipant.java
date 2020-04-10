@@ -13,9 +13,9 @@ import poa.agentes.AgenteLonja;
 import poa.agentes.POAAgent;
 
 @SuppressWarnings("serial")
-public class AperturaCreditoLonja extends AchieveREResponder {
+public class AperturaCreditoParticipant extends AchieveREResponder {
 
-	public AperturaCreditoLonja(Agent a, MessageTemplate mt) {
+	public AperturaCreditoParticipant(Agent a, MessageTemplate mt) {
 		super(a, mt);
 	}
 

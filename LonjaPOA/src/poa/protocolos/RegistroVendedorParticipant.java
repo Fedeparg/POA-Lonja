@@ -12,9 +12,9 @@ import poa.agentes.POAAgent;
 import poa.ontologia.Vendedor;
 
 @SuppressWarnings("serial")
-public class AdmisionVendedorP extends AchieveREResponder {
+public class RegistroVendedorParticipant extends AchieveREResponder {
 
-	public AdmisionVendedorP(Agent a, MessageTemplate mt) {
+	public RegistroVendedorParticipant(Agent a, MessageTemplate mt) {
 		super(a, mt);
 	}
 

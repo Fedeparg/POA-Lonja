@@ -10,11 +10,11 @@ import poa.agentes.POAAgent;
 import poa.ontologia.Articulo;
 
 @SuppressWarnings("serial")
-public class CobroLonja extends ProposeInitiator {
+public class CobroInitiator extends ProposeInitiator {
 
 	private LinkedList<Articulo> articulos;
 
-	public CobroLonja(Agent a, ACLMessage msg, LinkedList<Articulo> articulos) {
+	public CobroInitiator(Agent a, ACLMessage msg, LinkedList<Articulo> articulos) {
 		super(a, msg);
 		this.articulos = articulos;
 	}

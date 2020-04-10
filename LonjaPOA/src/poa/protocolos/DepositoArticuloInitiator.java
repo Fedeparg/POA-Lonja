@@ -7,9 +7,9 @@ import poa.agentes.AgenteVendedor;
 import poa.agentes.POAAgent;
 
 @SuppressWarnings("serial")
-public class DepositoArticuloI extends AchieveREInitiator {
+public class DepositoArticuloInitiator extends AchieveREInitiator {
 
-	public DepositoArticuloI(Agent a, ACLMessage msg) {
+	public DepositoArticuloInitiator(Agent a, ACLMessage msg) {
 		super(a, msg);
 	}
 

@@ -8,9 +8,9 @@ import poa.agentes.AgenteComprador;
 import poa.agentes.POAAgent;
 
 @SuppressWarnings("serial")
-public class AperturaCreditoComprador extends AchieveREInitiator {
+public class AperturaCreditoInitiator extends AchieveREInitiator {
 
-	public AperturaCreditoComprador(Agent a, ACLMessage msg) {
+	public AperturaCreditoInitiator(Agent a, ACLMessage msg) {
 		super(a, msg);
 	}
 

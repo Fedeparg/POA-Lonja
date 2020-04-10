@@ -10,9 +10,9 @@ import poa.agentes.AgenteVendedor;
 import poa.agentes.POAAgent;
 
 @SuppressWarnings("serial")
-public class CobroVendedor extends ProposeResponder {
+public class CobroParticipant extends ProposeResponder {
 
-	public CobroVendedor(Agent a, MessageTemplate mt) {
+	public CobroParticipant(Agent a, MessageTemplate mt) {
 		super(a, mt);
 	}
 

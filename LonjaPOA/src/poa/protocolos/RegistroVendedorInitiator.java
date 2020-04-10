@@ -7,9 +7,9 @@ import poa.agentes.AgenteVendedor;
 import poa.agentes.POAAgent;
 
 @SuppressWarnings("serial")
-public class AdmisionVendedorI extends AchieveREInitiator {
+public class RegistroVendedorInitiator extends AchieveREInitiator {
 
-	public AdmisionVendedorI(Agent a, ACLMessage msg) {
+	public RegistroVendedorInitiator(Agent a, ACLMessage msg) {
 		super(a, msg);
 	}
 
