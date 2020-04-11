@@ -25,5 +25,11 @@ public class CobroInitiator extends ProposeInitiator {
 		((AgenteLonja) myAgent).setCobroEnMarcha(false);
 		((AgenteLonja) myAgent).setEstadoCobro(0);
 	}
+	
+	protected void handleRejectProposal(ACLMessage reject_proposal) {
+		((POAAgent) myAgent).getLogger().info("Cobro", "El vendedor ha rechazado el pago...");
+		((AgenteLonja) myAgent).setCobroEnMarcha(false);
+		((AgenteLonja) myAgent).setEstadoCobro(0);
+	}
 
 }
