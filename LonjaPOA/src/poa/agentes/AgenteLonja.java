@@ -82,7 +82,7 @@ public class AgenteLonja extends POAAgent {
 				MessageTemplate msjAperturaCredito = MessageTemplate.MatchConversationId("AperturaCredito");
 				addBehaviour(new AperturaCreditoParticipant(this, msjAperturaCredito));
 
-				// Subasta de art�culos
+				// Subasta de articulos
 				protocoloSubasta();
 
 				// PROTOCOLO RETIRADA ARTICULO

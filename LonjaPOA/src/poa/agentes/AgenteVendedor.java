@@ -22,6 +22,7 @@ import poa.ontologia.Vendedor;
 import poa.protocolos.RegistroVendedorInitiator;
 import poa.protocolos.CobroParticipant;
 import poa.protocolos.DepositoArticuloInitiator;
+import poa.protocolos.RegistroCompradorInitiator;
 
 /**
  * Representación del vendedor en Jade. Arranca sus comportamientos y realiza
@@ -31,7 +32,7 @@ import poa.protocolos.DepositoArticuloInitiator;
 @SuppressWarnings("serial")
 public class AgenteVendedor extends POAAgent {
 
-	private AID[] lonjas;
+	private AID lonja;
 	private Vendedor config;
 	// Creamos un comportamiento secuencial para el registro y el deposito
 	SequentialBehaviour seq = new SequentialBehaviour(this);
@@ -51,6 +52,8 @@ public class AgenteVendedor extends POAAgent {
 				sd.setType("lonja");
 				template.addServices(sd);
 				DFAgentDescription[] result;
+				AID[] lonjas = null;
+
 				do {
 					try {
 						result = DFService.search(this, template);
@@ -62,42 +65,19 @@ public class AgenteVendedor extends POAAgent {
 						e.printStackTrace();
 					}
 				} while (lonjas.length == 0);
+				lonja = lonjas[0];
 
-				// Enviamos el mensaje de registro
-				for (AID lonja : lonjas) {
-					ACLMessage mensajeRegistro = new ACLMessage(ACLMessage.REQUEST);
-					mensajeRegistro.addReceiver(lonja);
-					try {
-						mensajeRegistro.setContentObject(config);
-					} catch (IOException e) {
-						System.out.println(this.getLocalName() + ": Fallo al crear el mensaje de registro");
-						e.printStackTrace();
-					}
-					mensajeRegistro.setConversationId("RegistroVendedor");
-					mensajeRegistro.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
-					System.out.println(
-							this.getLocalName() + ": Enviando peticion de registro a lonja " + lonja.getLocalName());
-					seq.addSubBehaviour(new RegistroVendedorInitiator(this, mensajeRegistro));
-				}
+				// PROTOCOLO REGISTRO VENDEDOR
+				seq.addSubBehaviour(protocoloRegistroComprador());
 
-				// Enviamos los mensajes para depositar articulos en la lonja
+				// PROTOCOLO DEPOSITO DE ARTICULO
 				for (Articulo articulo : this.config.getProductosParaVender()) {
-					ACLMessage mensajeDeposito = new ACLMessage(ACLMessage.REQUEST);
-					mensajeDeposito.addReceiver(lonjas[0]);
-					try {
-						mensajeDeposito.setContentObject(articulo);
-					} catch (IOException e) {
-						System.out.println(this.getLocalName() + ": Fallo al crear el mensaje de deposito de articulo");
-						e.printStackTrace();
-					}
-					mensajeDeposito.setConversationId("DepositoArticulo");
-					mensajeDeposito.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
-					System.out.println(this.getLocalName() + ": Enviando peticion de deposito de articulo");
-					seq.addSubBehaviour(new DepositoArticuloInitiator(this, mensajeDeposito));
+					seq.addSubBehaviour(protocoloDepositoArticulo(articulo));
 				}
 
 				addBehaviour(seq);
 
+				// PROTOCOLO COBRO
 				MessageTemplate msjCobro = MessageTemplate.MatchConversationId("Cobro");
 				addBehaviour(new CobroParticipant(this, msjCobro));
 
@@ -113,6 +93,42 @@ public class AgenteVendedor extends POAAgent {
 
 	public void addGanancias(Double dinero) {
 		config.setGanancias(config.getGanancias() + dinero);
+	}
+	
+	/**
+	 * Crea el mensaje e inicia el protocolo RegistroVendedor
+	 */
+	private Behaviour protocoloRegistroComprador() {
+		ACLMessage mensajeRegistro = new ACLMessage(ACLMessage.REQUEST);
+		mensajeRegistro.addReceiver(lonja);
+		try {
+			mensajeRegistro.setContentObject(config);
+		} catch (IOException e) {
+			System.out.println(this.getLocalName() + ": Fallo al crear el mensaje de registro");
+			e.printStackTrace();
+		}
+		mensajeRegistro.setConversationId("RegistroVendedor");
+		mensajeRegistro.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
+		
+		return new RegistroVendedorInitiator(this, mensajeRegistro);
+	}
+	
+	/**
+	 * Crea el mensaje e inicia el protocolo RegistroVendedor
+	 */
+	private Behaviour protocoloDepositoArticulo(Articulo articulo) {
+		ACLMessage mensajeDeposito = new ACLMessage(ACLMessage.REQUEST);
+		mensajeDeposito.addReceiver(lonja);
+		try {
+			mensajeDeposito.setContentObject(articulo);
+		} catch (IOException e) {
+			System.out.println(this.getLocalName() + ": Fallo al crear el mensaje de deposito de articulo");
+			e.printStackTrace();
+		}
+		mensajeDeposito.setConversationId("DepositoArticulo");
+		mensajeDeposito.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
+		System.out.println(this.getLocalName() + ": Enviando peticion de deposito de articulo");
+		return new DepositoArticuloInitiator(this, mensajeDeposito);
 	}
 
 	/**
