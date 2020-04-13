@@ -1,1 +1,7 @@
-/.metadata/
+/bin/
+/target/
+.vscode/
+logs/*
+APDescription.txt
+MTPs-Main-Container.txt
+

@@ -33,7 +33,6 @@ import poa.protocolos.SubastaParticipant;
 @SuppressWarnings("serial")
 public class AgenteComprador extends POAAgent {
 
-	private AID[] lonjas;
 	private Comprador config;
 	private AID lonja;
 	private boolean retiradaEnMarcha = false;
@@ -55,7 +54,7 @@ public class AgenteComprador extends POAAgent {
 				sd.setType("lonja");
 				template.addServices(sd);
 				DFAgentDescription[] result;
-
+				AID[] lonjas = null;
 				do {
 					try {
 						result = DFService.search(this, template);
@@ -69,7 +68,7 @@ public class AgenteComprador extends POAAgent {
 				} while (lonjas.length == 0);
 				lonja = lonjas[0];
 
-				// PROTOCOLO REGISTRO
+				// PROTOCOLO REGISTRO COMPRADOR
 				seq.addSubBehaviour(protocoloRegistroComprador());
 
 				// PROTOCOLO APERTURA CREDITO

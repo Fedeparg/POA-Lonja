@@ -64,23 +64,28 @@ public class EscenarioPrueba {
 
 				// Buyers
 				List<AgentRefConfig> buyers = scenario.getBuyers();
-				for (AgentRefConfig buyer : buyers) {
-					System.out.println(buyer);
-					Object[] buyerConfigArg = { buyer.getConfig() };
-					AgentController b = mc.createNewAgent(buyer.getName(), poa.agentes.AgenteComprador.class.getName(),
-							buyerConfigArg);
-					b.start();
+				if (buyers != null) {
+					for (AgentRefConfig buyer : buyers) {
+						System.out.println(buyer);
+						Object[] buyerConfigArg = { buyer.getConfig() };
+						AgentController b = mc.createNewAgent(buyer.getName(), poa.agentes.AgenteComprador.class.getName(),
+								buyerConfigArg);
+						b.start();
+					}
 				}
+				
 
 				// Sellers
 				List<AgentRefConfig> sellers = scenario.getSellers();
-				for (AgentRefConfig seller : sellers) {
-					System.out.println(seller);
-					Object[] buyerConfigArg = { seller.getConfig() };
-					AgentController b = mc.createNewAgent(seller.getName(), poa.agentes.AgenteVendedor.class.getName(),
-							buyerConfigArg);
-					b.start();
-				}
+				if (sellers != null) {
+					for (AgentRefConfig seller : sellers) {
+						System.out.println(seller);
+						Object[] sellerConfigArg = { seller.getConfig() };
+						AgentController b = mc.createNewAgent(seller.getName(), poa.agentes.AgenteVendedor.class.getName(),
+								sellerConfigArg);
+						b.start();
+					}				}
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
