@@ -1,15 +1,18 @@
 package poa.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
 public class AgentLoggingHTMLFormatter extends java.util.logging.Formatter {
+
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	@Override
 	public String format(LogRecord record) {
 		System.out.println("AgentLoggingHTMLFormatter");
 		Object[] params = record.getParameters();
-		return ("<tr><td><font color=\"" + params[2] + "\">" + (new Date(record.getMillis())).toString()
+		return ("<tr><td><font color=\"" + params[2] + "\">" + (sdf.format(new Date(record.getMillis())).toString())
 				+ "</font></td>" + "<td><font color=\"" + params[2] + "\">" + params[0] + "</font></td>"
 				+ "<td><font color=\"" + params[2] + "\">" + params[1] + "</font></td>" + "<td><font color=\""
 				+ params[2] + "\">" + record.getMessage() + "</font></td></tr>\n");
