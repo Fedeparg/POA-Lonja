@@ -14,14 +14,16 @@ public class RegistroCompradorInitiator extends AchieveREInitiator {
 	}
 
 	protected void handleInform(ACLMessage inform) {
-		((POAAgent) myAgent).getLogger().info("AdmisionComprador", "Recibido mensaje de aceptacion registro en  "
-				+ inform.getSender().getLocalName());
+		((POAAgent) myAgent).getLogger().info("AdmisionComprador",
+				"Recibido mensaje de aceptacion registro en  " + inform.getSender().getLocalName());
+
 		((AgenteComprador) myAgent).removeBehaviour(this);
 	}
 
 	protected void handleFailure(ACLMessage failure) {
-		((POAAgent) myAgent).getLogger().info("AdmisionComprador", "Recibido mensaje de fallo en registro en  "
-				+ failure.getSender().getLocalName());
+		((POAAgent) myAgent).getLogger().info("AdmisionComprador",
+				"Recibido mensaje de fallo en registro en  " + failure.getSender().getLocalName());
+
 		this.reset();
 	}
 

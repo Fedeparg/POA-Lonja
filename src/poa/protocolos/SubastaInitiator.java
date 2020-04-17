@@ -23,6 +23,7 @@ public class SubastaInitiator extends ContractNetInitiator {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void handleAllResponses(Vector responses, Vector acceptances) {
 		((POAAgent) myAgent).getLogger().info("Subasta", "Recibidas " + responses.size() + " peticiones de compra");
+
 		boolean articuloAdjudicado = false;
 
 		if (responses.size() > 0) {
@@ -50,7 +51,9 @@ public class SubastaInitiator extends ContractNetInitiator {
 					msjRespuesta.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
 					((AgenteLonja) myAgent).articuloVendido(articuloActual, respuesta.getSender());
 					articuloAdjudicado = true;
-					((POAAgent) myAgent).getLogger().info("Subasta", "Vendido el articulo " + articuloActual);
+
+					((POAAgent) myAgent).getLogger().info("Subasta", "Vendido el articulo " + articuloActual
+							+ " al comprador " + respuesta.getSender().getLocalName());
 				} else {
 					// Rechazamos el resto de propuestas
 					msjRespuesta.setPerformative(ACLMessage.REJECT_PROPOSAL);
@@ -66,7 +69,7 @@ public class SubastaInitiator extends ContractNetInitiator {
 				((POAAgent) myAgent).getLogger().info("Subasta", "Reintentando subasta de articulo " + articuloActual
 						+ " con precio " + articuloActual.getPrecio());
 			} else {
-				// Si no, lo a�adimos a la lista de imposibles y la subasta de ese articulo se
+				// Si no, lo agregamos a la lista de imposibles y la subasta de ese articulo se
 				// termina
 				((AgenteLonja) myAgent).imposibleVender(articuloActual);
 				((AgenteLonja) myAgent).setEstadoSubasta(0);

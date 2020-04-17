@@ -93,7 +93,7 @@ public class AgenteVendedor extends POAAgent {
 	public void addGanancias(Double dinero) {
 		config.setGanancias(config.getGanancias() + dinero);
 	}
-	
+
 	/**
 	 * Crea el mensaje e inicia el protocolo RegistroVendedor
 	 */
@@ -103,15 +103,17 @@ public class AgenteVendedor extends POAAgent {
 		try {
 			mensajeRegistro.setContentObject(config);
 		} catch (IOException e) {
-			System.out.println(this.getLocalName() + ": Fallo al crear el mensaje de registro");
+			getLogger().info("AdmisionVendedor", "Fallo al generar la peticion de registro del agente");
 			e.printStackTrace();
 		}
 		mensajeRegistro.setConversationId("RegistroVendedor");
 		mensajeRegistro.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
-		
+
+		getLogger().info("AdmisionVendedor", "Enviando peticion de registro");
+
 		return new RegistroVendedorInitiator(this, mensajeRegistro);
 	}
-	
+
 	/**
 	 * Crea el mensaje e inicia el protocolo RegistroVendedor
 	 */
@@ -121,12 +123,12 @@ public class AgenteVendedor extends POAAgent {
 		try {
 			mensajeDeposito.setContentObject(articulo);
 		} catch (IOException e) {
-			System.out.println(this.getLocalName() + ": Fallo al crear el mensaje de deposito de articulo");
+			getLogger().info("DepositoArticulo", "Fallo al crear la petición de depósito del articulo  " + articulo);
 			e.printStackTrace();
 		}
 		mensajeDeposito.setConversationId("DepositoArticulo");
 		mensajeDeposito.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
-		System.out.println(this.getLocalName() + ": Enviando peticion de deposito de articulo");
+		getLogger().info("DepositoArticulo", "Enviando peticion de deposito de articulo " + articulo);
 		return new DepositoArticuloInitiator(this, mensajeDeposito);
 	}
 

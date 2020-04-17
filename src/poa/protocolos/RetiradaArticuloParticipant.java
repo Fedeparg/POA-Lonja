@@ -23,13 +23,15 @@ public class RetiradaArticuloParticipant extends AchieveREResponder {
 		((POAAgent) myAgent).getLogger().info("RetiradaArticulo",
 				"Recibida peticion de retirada de " + request.getSender().getLocalName());
 		Articulo articulo = null;
+
 		try {
 			articulo = (Articulo) request.getContentObject();
 		} catch (UnreadableException e) {
-			System.out.println("Fallo al sacar el articulo del mensaje de registro");
+			((POAAgent) myAgent).getLogger().info("RetiradaArticulo",
+					"Fallo al retirar el articulo de " + request.getSender().getLocalName());
 			e.printStackTrace();
 		}
-		// A�adimos el vendedor a lista de vendedores y enviamos la respuesta
+
 		ACLMessage msjRespuesta = request.createReply();
 		if (articulo != null) {
 			msjRespuesta.setPerformative(ACLMessage.INFORM);
@@ -42,6 +44,7 @@ public class RetiradaArticuloParticipant extends AchieveREResponder {
 			msjRespuesta.setPerformative(ACLMessage.FAILURE);
 			msjRespuesta.setContent("Fallo al retirar articulo");
 		}
+
 		return msjRespuesta;
 	}
 

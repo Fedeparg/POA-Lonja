@@ -17,6 +17,7 @@ public class RegistroVendedorInitiator extends AchieveREInitiator {
 
 		((POAAgent) myAgent).getLogger().info("AdmisionVendedor",
 				"Recibido mensaje de aceptacion registro en " + inform.getSender().getLocalName());
+				
 		((AgenteVendedor) myAgent).removeSequentialBehaviour(this);
 	}
 

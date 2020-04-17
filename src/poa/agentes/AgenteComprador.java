@@ -103,12 +103,13 @@ public class AgenteComprador extends POAAgent {
 		try {
 			msgRegistro.setContentObject(config);
 		} catch (IOException e) {
+			getLogger().info("AdmisionComprador", "Fallo al generar la peticion de registro");
 			e.printStackTrace();
 		}
 		msgRegistro.setConversationId("RegistroComprador");
 		msgRegistro.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
-		System.out.println(this.getLocalName() + ": Enviando peticion de registro a lonja " + lonja.getLocalName()
-				+ " como comprador");
+
+		getLogger().info("AdmisionComprador", "Enviando peticion de registro");
 
 		return new RegistroCompradorInitiator(this, msgRegistro);
 	}
@@ -122,12 +123,14 @@ public class AgenteComprador extends POAAgent {
 		try {
 			mensajeAperturaCredito.setContentObject(config.getDinero());
 		} catch (IOException e) {
+			getLogger().info("AperturaCredito", "Fallo al generar la peticion de aperturaCredito");
 			e.printStackTrace();
 		}
 		mensajeAperturaCredito.setConversationId("AperturaCredito");
 		mensajeAperturaCredito.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
-		System.out.println(
-				this.getLocalName() + ": Enviada solicitud de apertura credito a lonja" + lonja.getLocalName());
+
+		getLogger().info("AperturaCredito", "Enviando peticion de aperturaCredito");
+
 		return new AperturaCreditoInitiator(this, mensajeAperturaCredito);
 	}
 

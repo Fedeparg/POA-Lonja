@@ -16,12 +16,14 @@ public class AperturaCreditoInitiator extends AchieveREInitiator {
 	protected void handleInform(ACLMessage inform) {
 		((POAAgent) myAgent).getLogger().info("AperturaCredito",
 				"Recibido mensaje de aceptacion apertura credito en " + inform.getSender().getLocalName());
+
 		((AgenteComprador) myAgent).removeSequentialBehaviour(this);
 	}
 
 	protected void handleFailure(ACLMessage failure) {
 		((POAAgent) myAgent).getLogger().info("AperturaCredito",
 				"Recibido mensaje de fallo en apertura credito en " + failure.getSender().getLocalName());
+
 		this.reset();
 	}
 

@@ -25,9 +25,11 @@ public class SubastaParticipant extends ContractNetResponder {
 		((POAAgent) myAgent).getLogger().info("Subasta", "Recibida oferta de compra");
 		String pescadito = null;
 		double precio = 0;
+		Articulo articulo = null;
 		try {
-			pescadito = ((Articulo) cfp.getContentObject()).getPescado();
-			precio = ((Articulo) cfp.getContentObject()).getPrecio();
+			articulo = (Articulo) cfp.getContentObject();
+			pescadito = articulo.getPescado();
+			precio = articulo.getPrecio();
 		} catch (UnreadableException e) {
 			e.printStackTrace();
 		}
@@ -40,7 +42,7 @@ public class SubastaParticipant extends ContractNetResponder {
 			} catch (IOException | UnreadableException e) {
 				e.printStackTrace();
 			}
-			((POAAgent) myAgent).getLogger().info("Subasta", "Pujo por el artículo");
+			((POAAgent) myAgent).getLogger().info("Subasta", "Pujo por el artículo " + articulo);
 			return puja;
 		}
 		return null;
@@ -48,7 +50,6 @@ public class SubastaParticipant extends ContractNetResponder {
 
 	protected ACLMessage handleAcceptProposal(ACLMessage cfp, ACLMessage propose, ACLMessage accept)
 			throws FailureException {
-		((POAAgent) myAgent).getLogger().info("Subasta", "He comprado cosas");
 		ACLMessage response = accept.createReply();
 		response.setPerformative(ACLMessage.INFORM);
 		Articulo articulo = null;
@@ -57,12 +58,14 @@ public class SubastaParticipant extends ContractNetResponder {
 		} catch (UnreadableException e) {
 			e.printStackTrace();
 		}
+		((POAAgent) myAgent).getLogger().info("Subasta", "He comprado el articulo " + articulo);
+
 		((AgenteComprador) myAgent).eliminarListaCompra(articulo);
 		return response;
 	}
 
 	protected void handleRejectProposal(ACLMessage cfp, ACLMessage propose, ACLMessage reject) {
-		((POAAgent) myAgent).getLogger().info("Subasta", "Pos se me han adelantado");
+		((POAAgent) myAgent).getLogger().info("Subasta", "Se me han adelantado");
 	}
 
 }

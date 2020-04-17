@@ -76,4 +76,9 @@ public class Articulo implements Serializable {
 		this.comprador = comprador;
 	}
 
+	@Override
+	public String toString() {
+		return kilos + " kilos de " + pescado;
+	}
+
 }

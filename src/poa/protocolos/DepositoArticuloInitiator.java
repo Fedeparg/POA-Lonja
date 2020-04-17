@@ -16,13 +16,14 @@ public class DepositoArticuloInitiator extends AchieveREInitiator {
 	protected void handleInform(ACLMessage inform) {
 		((POAAgent) myAgent).getLogger().info("DepositoArticulo",
 				"Recibido mensaje de aceptacion de deposito en " + inform.getSender().getLocalName());
-		System.out.println(this.getCurrent());
+
 		((AgenteVendedor) myAgent).removeSequentialBehaviour(this);
 	}
 
 	protected void handleFailure(ACLMessage failure) {
 		((POAAgent) myAgent).getLogger().info("DepositoArticulo",
 				"Recibido mensaje de fallo en deposito en " + failure.getSender().getLocalName());
+
 		this.reset();
 	}
 

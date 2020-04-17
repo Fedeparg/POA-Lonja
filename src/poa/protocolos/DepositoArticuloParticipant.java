@@ -17,13 +17,14 @@ public class DepositoArticuloParticipant extends AchieveREResponder {
 	}
 
 	protected ACLMessage handleRequest(ACLMessage request) {
-		((POAAgent) myAgent).getLogger().info("DepositoArticulo", "Recibida peticion de deposito de "
-				+ request.getSender().getLocalName());
+		((POAAgent) myAgent).getLogger().info("DepositoArticulo",
+				"Procesando peticion de deposito de " + request.getSender().getLocalName());
 		Articulo articulo = null;
 		try {
 			articulo = (Articulo) request.getContentObject();
 		} catch (UnreadableException e) {
-			System.out.println(myAgent.getLocalName() + ": fallo al extraer el articulo del mensaje");
+			((POAAgent) myAgent).getLogger().info("DepositoArticulo",
+					"Fallo al depositar " + articulo + " del " + request.getSender().getLocalName());
 			e.printStackTrace();
 		}
 		ACLMessage msjRespuesta = request.createReply();
@@ -31,6 +32,9 @@ public class DepositoArticuloParticipant extends AchieveREResponder {
 			((AgenteLonja) myAgent).addArticuloParaSubastar(articulo, request.getSender());
 			msjRespuesta.setPerformative(ACLMessage.INFORM);
 			msjRespuesta.setContent("Articulo depositado con exito");
+
+			((POAAgent) myAgent).getLogger().info("DepositoArticulo",
+					"Depositados " + articulo + " del " + request.getSender().getLocalName() + " con exito");
 		} else {
 			msjRespuesta.setPerformative(ACLMessage.FAILURE);
 			msjRespuesta.setContent("Fallo al depositar el articulo");

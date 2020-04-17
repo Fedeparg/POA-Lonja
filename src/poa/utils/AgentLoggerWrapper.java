@@ -22,7 +22,8 @@ public class AgentLoggerWrapper {
 
 	public void info(String behaviour, String msg) {
 		Object[] params = { this.agent.getLocalName(), behaviour, color };
-		System.out.println(params[0] + "," + params[1] + "," + params[2]);
+		// System.out.println(params[0] + "," + params[1] + "," + params[2]);
+		System.out.println(params[0] + "," + params[1]);
 		this.logger.log(Level.INFO, msg, params);
 	}
 

@@ -26,15 +26,18 @@ public class AperturaCreditoParticipant extends AchieveREResponder {
 		try {
 			dinero = (Double) request.getContentObject();
 		} catch (UnreadableException e) {
-			System.out.println("Fallo al sacar el dinero del mensaje de registro");
+			((POAAgent) myAgent).getLogger().info("AperturaCredito",
+					"Fallo en la apertura de credito del comprador " + request.getSender().getLocalName());
 			e.printStackTrace();
 		}
-		// A�adimos el vendedor a lista de vendedores
+		// Agregamos el vendedor a lista de vendedores
 		ACLMessage msjRespuesta = request.createReply();
 		if (dinero != null && ((AgenteLonja) this.myAgent).containsComprador(request.getSender())) {
 			((AgenteLonja) this.myAgent).addDineroComprador(request.getSender(), dinero);
+
 			((POAAgent) myAgent).getLogger().info("AperturaCredito",
-					"Añadido " + dinero + "al comprador " + request.getSender().getLocalName());
+					"Añadido " + dinero + " al comprador " + request.getSender().getLocalName());
+
 			msjRespuesta.setPerformative(ACLMessage.INFORM);
 			try {
 				msjRespuesta.setContentObject(dinero);
@@ -44,9 +47,6 @@ public class AperturaCreditoParticipant extends AchieveREResponder {
 		} else {
 			msjRespuesta.setPerformative(ACLMessage.FAILURE);
 			msjRespuesta.setContent("Fallo en apertura credito");
-			System.out.println(
-					this.myAgent.getLocalName() + ": Enviando mensaje de fallo en apertura credito de comprador a "
-							+ request.getSender().getLocalName());
 		}
 		return msjRespuesta;
 	}
