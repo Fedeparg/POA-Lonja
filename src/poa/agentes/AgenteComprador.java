@@ -77,7 +77,6 @@ public class AgenteComprador extends POAAgent {
 				addBehaviour(seq);
 
 				// PROTOCOLO SUBASTA
-
 				MessageTemplate msjPuja = MessageTemplate.MatchConversationId("Subasta");
 				addBehaviour(new SubastaParticipant(this, msjPuja));
 

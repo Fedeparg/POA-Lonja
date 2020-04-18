@@ -1,8 +1,10 @@
 package poa.escenario;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.DrbgParameters.Capability;
 import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -98,6 +100,10 @@ public class EscenarioPrueba {
 		Logger logger = Logger.getMyLogger("poa");
 		logger.setLevel(Level.INFO);
 
+		File carpetaLog = new File("logs");
+		if (!carpetaLog.exists()) {
+			carpetaLog.mkdir();
+		}
 		FileHandler html_handler = new FileHandler("logs/" + scenarioName + ".html");
 		html_handler.setFormatter(new AgentLoggingHTMLFormatter());
 		logger.addHandler(html_handler);

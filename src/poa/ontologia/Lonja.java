@@ -75,12 +75,7 @@ public class Lonja {
 	 */
 	public LinkedList<Articulo> getArticulosParaSubastar() {
 		LinkedList<Articulo> articulos = new LinkedList<Articulo>(articulosParaSubastar.keySet());
-		articulos.sort(new Comparator<Articulo>() {
-			@Override
-			public int compare(Articulo arg0, Articulo arg1) {
-				return arg0.getHoraRegistro().compareTo(arg1.getHoraRegistro());
-			}
-		});
+		articulos.sort((art0, art1) -> art0.getHoraRegistro().compareTo(art1.getHoraRegistro()));
 		return articulos;
 	}
 

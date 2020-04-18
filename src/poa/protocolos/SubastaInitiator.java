@@ -29,15 +29,7 @@ public class SubastaInitiator extends ContractNetInitiator {
 		if (responses.size() > 0) {
 
 			// Ordenamos las respuestas por fecha de envio
-			responses.sort(new Comparator<ACLMessage>() {
-				@Override
-				public int compare(ACLMessage arg0, ACLMessage arg1) {
-					if (arg0.getPostTimeStamp() > arg1.getPostTimeStamp())
-						return -1;
-					else
-						return 1;
-				}
-			});
+			responses.sort((msg0, msg1) -> Long.compare(((ACLMessage)msg0).getPostTimeStamp(),((ACLMessage)msg1).getPostTimeStamp()));
 
 			// Respondemos a todas las propuestad que recibimos
 			for (int i = 0; i < responses.size(); i++) {
