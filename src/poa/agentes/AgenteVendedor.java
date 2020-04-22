@@ -39,6 +39,7 @@ public class AgenteVendedor extends POAAgent {
 	public void setup() {
 		super.setup();
 
+		 
 		Object[] args = getArguments();
 		if (args != null && args.length == 1) {
 			String configFile = (String) args[0];

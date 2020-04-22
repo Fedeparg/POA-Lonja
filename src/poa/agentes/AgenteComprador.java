@@ -41,6 +41,8 @@ public class AgenteComprador extends POAAgent {
 	public void setup() {
 
 		super.setup();
+		
+		
 
 		Object[] args = getArguments();
 		if (args != null && args.length == 1) {
@@ -57,6 +59,9 @@ public class AgenteComprador extends POAAgent {
 				seq.addSubBehaviour(protocoloAperturaCredito());
 
 				addBehaviour(seq);
+				
+				
+
 
 				// PROTOCOLO SUBASTA
 				MessageTemplate msjPuja = MessageTemplate.MatchConversationId("Subasta");

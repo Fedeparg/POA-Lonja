@@ -14,6 +14,11 @@ public class POAAgent extends Agent {
 
 	public void setup() {
 		this.logger = new AgentLoggerWrapper(this);
+		  try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 	}
 
 	public AgentLoggerWrapper getLogger() {

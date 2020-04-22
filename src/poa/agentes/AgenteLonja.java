@@ -120,6 +120,7 @@ public class AgenteLonja extends POAAgent {
 					// Si no hay nada que hacer, dormimos el hilo
 					block(50);
 				} else if (!config.getArticulosParaSubastar().isEmpty()) {
+					
 					if (articuloIteracion != null && !subastaEnMarcha && !config.getCompradores().isEmpty()
 							&& estadoSubasta != 0) {
 						subastaProgramada = false;
