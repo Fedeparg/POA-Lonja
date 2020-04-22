@@ -90,7 +90,7 @@ public class EscenarioPrueba {
 				if (sellers != null) {
 					for (AgentRefConfig seller : sellers) {
 						System.out.println(seller);
-						//simulationAgents.add(seller.getName());
+						simulationAgents.add(seller.getName());
 						Object[] sellerConfigArg = { seller.getConfig() };
 						AgentController b = mc.createNewAgent(seller.getName(), poa.agentes.AgenteVendedor.class.getName(),
 								sellerConfigArg);

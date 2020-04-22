@@ -34,6 +34,5 @@
 			<attribute name="m2e-apt" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/fedeparg/POA-Lonja/commons-codec-1.14.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
