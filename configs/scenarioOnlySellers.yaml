@@ -8,4 +8,4 @@ sellers:
   - name: "Vendedor1"
     config: "configs/sellerType1.yaml"
   - name: "Vendedor2"
-    config: "configs/sellerType1.yaml"
+    config: "configs/sellerType1.yaml" 

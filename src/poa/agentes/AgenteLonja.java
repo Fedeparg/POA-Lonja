@@ -121,6 +121,7 @@ public class AgenteLonja extends POAAgent {
 					block(config.getPeriodoLatencia() / 5);
 
 				} else if (!config.getArticulosParaSubastar().isEmpty()) {
+					
 					if (articuloIteracion != null && !subastaEnMarcha && !config.getCompradores().isEmpty()
 							&& estadoSubasta != 0) {
 						subastaProgramada = false;

@@ -4,7 +4,3 @@ productosParaVender:
     pescado: "sardina"
     precio: 100.0
     precioReserva: 10.0
-  - kilos: 5.0
-    pescado: "bacalao"
-    precio: 100.0
-    precioReserva: 10.0
