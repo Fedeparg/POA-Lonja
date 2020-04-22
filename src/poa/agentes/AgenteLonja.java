@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.Date;
 import java.util.LinkedList;
 
@@ -48,7 +49,8 @@ public class AgenteLonja extends POAAgent {
 		super.setup();
 		Object[] args = getArguments();
 		if (args != null && args.length == 1) {
-			String configFile = (String) args[0];
+			Path configg = (Path) args[0];
+			String configFile = configg.toString();
 			config = initAgentFromConfigFile(configFile);
 
 			if (config != null) {

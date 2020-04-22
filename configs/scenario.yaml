@@ -3,12 +3,14 @@ name: "EscenarioPrueba"
 description: "Ejemplo para hacer una configuración YAML"
 fishMarket:
   name: "Lonja"
-  config: "configs/fishMarket.yaml"
+  config: "fishMarket.yaml"
 buyers:
   - name: "Comprador1"
-    config: "configs/buyerType1.yaml"
+    config: "buyerType1.yaml"
   - name: "Comprador2"
-    config: "configs/buyerType1.yaml"
+    config: "buyerType1.yaml"
 sellers:
   - name: "Vendedor1"
-    config: "configs/sellerType1.yaml"
+    config: "sellerType1.yaml"
+  - name: "Vendedor2"
+    config: "sellerType1.yaml"

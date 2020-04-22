@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 
 import org.yaml.snakeyaml.Yaml;
 
@@ -42,7 +43,8 @@ public class AgenteVendedor extends POAAgent {
 		 
 		Object[] args = getArguments();
 		if (args != null && args.length == 1) {
-			String configFile = (String) args[0];
+			Path configg = (Path) args[0];
+			String configFile = configg.toString();
 			config = initAgentFromConfigFile(configFile);
 
 			if (config != null) {
@@ -140,8 +142,8 @@ public class AgenteVendedor extends POAAgent {
 	 * 
 	 * @param behaviour que queremos eliminar
 	 */
-	public void removeSequentialBehaviour(Behaviour bh) {
-		seq.removeSubBehaviour(bh);
+	public void removeSequentialBehaviour(Behaviour behaviour) {
+		seq.removeSubBehaviour(behaviour);
 		if (seq.getChildren().isEmpty()) {
 			removeBehaviour(seq);
 		}
