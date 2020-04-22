@@ -118,8 +118,7 @@ public class AgenteLonja extends POAAgent {
 					});
 					subastaProgramada = true;
 					// Si no hay nada que hacer, dormimos el hilo
-					block(config.getPeriodoLatencia() / 5);
-
+					block(50);
 				} else if (!config.getArticulosParaSubastar().isEmpty()) {
 					if (articuloIteracion != null && !subastaEnMarcha && !config.getCompradores().isEmpty()
 							&& estadoSubasta != 0) {
@@ -149,11 +148,11 @@ public class AgenteLonja extends POAAgent {
 						myAgent.addBehaviour(new SubastaInitiator(myAgent, msjVendoPescado, articuloIteracion));
 					} else {
 						// Si la subasta esta en marcha, nos dormimos
-						block(config.getPeriodoLatencia() / 5);
+						block(50);
 					}
 				} else {
 					// Si no hay articulos para subastar, dormimos el hilo
-					block(config.getPeriodoLatencia());
+					block(50);
 				}
 			}
 		});
@@ -171,7 +170,7 @@ public class AgenteLonja extends POAAgent {
 						}
 					});
 					// Dormimos el hilo si ahora mismo no podemos cobrar
-					block(config.getPeriodoLatencia());
+					block(200);
 				} else {
 					if (!config.getArticulosCompradosNoPagados().isEmpty() && !cobroEnMarcha) {
 
@@ -198,7 +197,7 @@ public class AgenteLonja extends POAAgent {
 
 					} else {
 						// Dormimos el hilo
-						block(config.getPeriodoLatencia());
+						block(200);
 					}
 				}
 			}
@@ -321,6 +320,10 @@ public class AgenteLonja extends POAAgent {
 			e.printStackTrace();
 		}
 		return config;
+	}
+
+	public void takeDown() {
+		super.takeDown();
 	}
 
 }

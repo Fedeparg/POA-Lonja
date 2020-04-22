@@ -1,6 +1,5 @@
 package poa.protocolos;
 
-import java.util.Comparator;
 import java.util.Vector;
 
 import jade.core.Agent;

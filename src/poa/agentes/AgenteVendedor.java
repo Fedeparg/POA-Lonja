@@ -45,26 +45,7 @@ public class AgenteVendedor extends POAAgent {
 			config = initAgentFromConfigFile(configFile);
 
 			if (config != null) {
-				DFAgentDescription template = new DFAgentDescription();
-				ServiceDescription sd = new ServiceDescription();
-				sd.setType("lonja");
-				sd.setType("lonja");
-				template.addServices(sd);
-				DFAgentDescription[] result;
-				AID[] lonjas = null;
-
-				do {
-					try {
-						result = DFService.search(this, template);
-						lonjas = new AID[result.length];
-						for (int i = 0; i < result.length; i++) {
-							lonjas[i] = result[i].getName();
-						}
-					} catch (FIPAException e) {
-						e.printStackTrace();
-					}
-				} while (lonjas.length == 0);
-				lonja = lonjas[0];
+				lonja = buscaLonjas();
 
 				// PROTOCOLO REGISTRO VENDEDOR
 				seq.addSubBehaviour(protocoloRegistroComprador());
@@ -90,9 +71,29 @@ public class AgenteVendedor extends POAAgent {
 
 	}
 
-	public void addGanancias(Double dinero) {
-		config.setGanancias(config.getGanancias() + dinero);
+	private AID buscaLonjas() {
+		DFAgentDescription template = new DFAgentDescription();
+		ServiceDescription sd = new ServiceDescription();
+		sd.setType("lonja");
+		sd.setType("lonja");
+		template.addServices(sd);
+		DFAgentDescription[] result;
+		AID[] listaLonjas = null;
+		do {
+			try {
+				result = DFService.search(this, template);
+				listaLonjas = new AID[result.length];
+				for (int i = 0; i < result.length; i++) {
+					listaLonjas[i] = result[i].getName();
+				}
+			} catch (FIPAException e) {
+				e.printStackTrace();
+			}
+		} while (listaLonjas.length == 0);
+		lonja = listaLonjas[0];
+		return lonja;
 	}
+
 
 	/**
 	 * Crea el mensaje e inicia el protocolo RegistroVendedor
@@ -145,6 +146,10 @@ public class AgenteVendedor extends POAAgent {
 		}
 	}
 
+	public void addGanancias(Double dinero) {
+		config.setGanancias(config.getGanancias() + dinero);
+	}
+
 	private Vendedor initAgentFromConfigFile(String fileName) {
 		Vendedor config = null;
 		try {
@@ -157,5 +162,9 @@ public class AgenteVendedor extends POAAgent {
 			e.printStackTrace();
 		}
 		return config;
+	}
+
+	public void takeDown() {
+		super.takeDown();
 	}
 }
