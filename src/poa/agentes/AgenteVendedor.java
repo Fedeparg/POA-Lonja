@@ -35,12 +35,11 @@ public class AgenteVendedor extends POAAgent {
 	private AID lonja;
 	private Vendedor config;
 	// Creamos un comportamiento secuencial para el registro y el deposito
-	SequentialBehaviour seq = new SequentialBehaviour(this);
+	SequentialBehaviour comportamientoSecuencial = new SequentialBehaviour(this);
 
 	public void setup() {
 		super.setup();
 
-		 
 		Object[] args = getArguments();
 		if (args != null && args.length == 1) {
 			Path configg = (Path) args[0];
@@ -51,14 +50,14 @@ public class AgenteVendedor extends POAAgent {
 				lonja = buscaLonjas();
 
 				// PROTOCOLO REGISTRO VENDEDOR
-				seq.addSubBehaviour(protocoloRegistroComprador());
+				comportamientoSecuencial.addSubBehaviour(protocoloRegistroComprador());
 
 				// PROTOCOLO DEPOSITO DE ARTICULO
 				for (Articulo articulo : this.config.getProductosParaVender()) {
-					seq.addSubBehaviour(protocoloDepositoArticulo(articulo));
+					comportamientoSecuencial.addSubBehaviour(protocoloDepositoArticulo(articulo));
 				}
 
-				addBehaviour(seq);
+				addBehaviour(comportamientoSecuencial);
 
 				// PROTOCOLO COBRO
 				MessageTemplate msjCobro = MessageTemplate.MatchConversationId("Cobro");
@@ -71,7 +70,6 @@ public class AgenteVendedor extends POAAgent {
 			getLogger().info("ERROR", "Requiere fichero de cofiguración.");
 			doDelete();
 		}
-
 	}
 
 	private AID buscaLonjas() {
@@ -96,7 +94,6 @@ public class AgenteVendedor extends POAAgent {
 		lonja = listaLonjas[0];
 		return lonja;
 	}
-
 
 	/**
 	 * Crea el mensaje e inicia el protocolo RegistroVendedor
@@ -143,9 +140,9 @@ public class AgenteVendedor extends POAAgent {
 	 * @param behaviour que queremos eliminar
 	 */
 	public void removeSequentialBehaviour(Behaviour behaviour) {
-		seq.removeSubBehaviour(behaviour);
-		if (seq.getChildren().isEmpty()) {
-			removeBehaviour(seq);
+		comportamientoSecuencial.removeSubBehaviour(behaviour);
+		if (comportamientoSecuencial.getChildren().isEmpty()) {
+			removeBehaviour(comportamientoSecuencial);
 		}
 	}
 

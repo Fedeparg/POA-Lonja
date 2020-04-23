@@ -2,6 +2,7 @@ package poa.protocolos;
 
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.UnreadableException;
 import jade.proto.AchieveREInitiator;
 import poa.agentes.AgenteComprador;
 import poa.agentes.POAAgent;
@@ -16,6 +17,14 @@ public class AperturaCreditoInitiator extends AchieveREInitiator {
 	protected void handleInform(ACLMessage inform) {
 		((POAAgent) myAgent).getLogger().info("AperturaCredito",
 				"Recibido mensaje de aceptacion apertura credito en " + inform.getSender().getLocalName());
+
+		Double dinero = 0.0;
+		try {
+			dinero = (Double) inform.getContentObject();
+		} catch (UnreadableException e) {
+			e.printStackTrace();
+		}
+		((AgenteComprador) myAgent).restarDineroComprador(dinero);
 
 		((AgenteComprador) myAgent).removeSequentialBehaviour(this);
 	}

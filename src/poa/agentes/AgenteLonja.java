@@ -41,7 +41,6 @@ public class AgenteLonja extends POAAgent {
 	private Lonja config;
 	private boolean subastaEnMarcha = false;
 	private int estadoSubasta = 0;
-	private int estadoCobro = 0;
 	private boolean subastaProgramada = false;
 	private boolean cobroEnMarcha = false;
 
@@ -55,18 +54,7 @@ public class AgenteLonja extends POAAgent {
 
 			if (config != null) {
 				// Registrar el servicio en las paginas amarillas
-				DFAgentDescription dfd = new DFAgentDescription();
-				dfd.setName(getAID());
-				ServiceDescription sd = new ServiceDescription();
-				sd.setType("lonja");
-				sd.setName("lonja");
-				dfd.addServices(sd);
-
-				try {
-					DFService.register(this, dfd);
-				} catch (FIPAException e) {
-					e.printStackTrace();
-				}
+				registroServicio();
 
 				// Registro vendedor
 				MessageTemplate msjRegistroVendedor = MessageTemplate.MatchConversationId("RegistroVendedor");
@@ -99,7 +87,21 @@ public class AgenteLonja extends POAAgent {
 			this.getLogger().info("ERROR", "Requiere fichero de cofiguración.");
 			doDelete();
 		}
+	}
 
+	private void registroServicio() {
+		DFAgentDescription dfd = new DFAgentDescription();
+		dfd.setName(getAID());
+		ServiceDescription sd = new ServiceDescription();
+		sd.setType("lonja");
+		sd.setName("lonja");
+		dfd.addServices(sd);
+
+		try {
+			DFService.register(this, dfd);
+		} catch (FIPAException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void protocoloSubasta() {
@@ -112,6 +114,7 @@ public class AgenteLonja extends POAAgent {
 				if (estadoSubasta == 0 && !config.getArticulosParaSubastar().isEmpty() && !subastaProgramada) {
 					// Si no hay una puja en marcha, se inicia tras el periodo de latencia
 					((POAAgent) myAgent).getLogger().info("Subasta", "PAUSA ENTRE SUBASTAS");
+					
 					articuloIteracion = config.getArticulosParaSubastar().getFirst();
 					myAgent.addBehaviour(new WakerBehaviour(myAgent, config.getPeriodoLatencia()) {
 						protected void onWake() {
@@ -122,7 +125,7 @@ public class AgenteLonja extends POAAgent {
 					// Si no hay nada que hacer, dormimos el hilo
 					block(50);
 				} else if (!config.getArticulosParaSubastar().isEmpty()) {
-					
+
 					if (articuloIteracion != null && !subastaEnMarcha && !config.getCompradores().isEmpty()
 							&& estadoSubasta != 0) {
 						subastaProgramada = false;
@@ -166,46 +169,32 @@ public class AgenteLonja extends POAAgent {
 
 			@Override
 			public void action() {
-				if (estadoCobro == 0) {
-					myAgent.addBehaviour(new WakerBehaviour(myAgent, 500) {
-						protected void onWake() {
-							estadoCobro = 1;
-						}
-					});
-					// Dormimos el hilo si ahora mismo no podemos cobrar
-					block(200);
-				} else {
-					if (!config.getArticulosCompradosNoPagados().isEmpty() && !cobroEnMarcha) {
+				if (!config.getArticulosCompradosNoPagados().isEmpty() && !cobroEnMarcha) {
 
-						cobroEnMarcha = true;
-						LinkedList<AID> vendedores = new LinkedList<AID>(
-								config.getArticulosCompradosNoPagados().keySet());
+					cobroEnMarcha = true;
+					LinkedList<AID> vendedores = new LinkedList<AID>(config.getArticulosCompradosNoPagados().keySet());
 
-						AID vendedor = vendedores.getFirst();
+					AID vendedor = vendedores.getFirst();
 
-						if (!config.getArticulosCompradosNoPagados().get(vendedor).isEmpty()) {
+					if (!config.getArticulosCompradosNoPagados().get(vendedor).isEmpty()) {
 
-							((POAAgent) myAgent).getLogger().info("Cobro",
-									"Vamos a darle el dinero al agente " + vendedor.getLocalName());
+						((POAAgent) myAgent).getLogger().info("Cobro",
+								"Vamos a darle el dinero al agente " + vendedor.getLocalName());
 
-							ACLMessage msjCobro = new ACLMessage(ACLMessage.PROPOSE);
-							msjCobro.addReceiver(vendedor);
-							Double dinero = config.getDineroCobro(vendedor);
-							msjCobro.setContent(dinero.toString());
-							LinkedList<Articulo> articulos = new LinkedList<Articulo>(
-									config.getArticulosCompradosNoPagados().get(vendedor));
-							msjCobro.setConversationId("Cobro");
-							myAgent.addBehaviour(new CobroInitiator(myAgent, msjCobro, articulos));
-						}
-
-					} else {
-						// Dormimos el hilo
-						block(200);
+						ACLMessage msjCobro = new ACLMessage(ACLMessage.PROPOSE);
+						msjCobro.addReceiver(vendedor);
+						Double dinero = config.getDineroCobro(vendedor);
+						msjCobro.setContent(dinero.toString());
+						LinkedList<Articulo> articulos = new LinkedList<Articulo>(
+								config.getArticulosCompradosNoPagados().get(vendedor));
+						msjCobro.setConversationId("Cobro");
+						myAgent.addBehaviour(new CobroInitiator(myAgent, msjCobro, articulos));
 					}
+				} else {
+					block(200);
 				}
 			}
 		});
-
 	}
 
 	public boolean isSubastaEnMarcha() {
@@ -301,14 +290,6 @@ public class AgenteLonja extends POAAgent {
 
 	public void eliminarArticulosCobrados(AID vendedor, LinkedList<Articulo> articulos) {
 		config.eliminarArticulosCobrados(vendedor, articulos);
-	}
-
-	public int getEstadoCobro() {
-		return estadoCobro;
-	}
-
-	public void setEstadoCobro(int estadoCobro) {
-		this.estadoCobro = estadoCobro;
 	}
 
 	private Lonja initAgentFromConfigFile(String fileName) {

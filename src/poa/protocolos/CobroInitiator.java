@@ -23,13 +23,11 @@ public class CobroInitiator extends ProposeInitiator {
 		((POAAgent) myAgent).getLogger().info("Cobro", "Eliminando articulos cobrados...");
 		((AgenteLonja) myAgent).eliminarArticulosCobrados(accept_proposal.getSender(), articulos);
 		((AgenteLonja) myAgent).setCobroEnMarcha(false);
-		((AgenteLonja) myAgent).setEstadoCobro(0);
 	}
 	
 	protected void handleRejectProposal(ACLMessage reject_proposal) {
 		((POAAgent) myAgent).getLogger().info("Cobro", "El vendedor " + reject_proposal.getSender().getLocalName() + " ha rechazado el pago...");
 		((AgenteLonja) myAgent).setCobroEnMarcha(false);
-		((AgenteLonja) myAgent).setEstadoCobro(0);
 	}
 
 }

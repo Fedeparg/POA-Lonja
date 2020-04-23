@@ -22,9 +22,12 @@ public class AperturaCreditoParticipant extends AchieveREResponder {
 	protected ACLMessage handleRequest(ACLMessage request) throws NotUnderstoodException, RefuseException {
 		((POAAgent) myAgent).getLogger().info("AperturaCredito",
 				"Recibida peticion de apertura credito de " + request.getSender().getLocalName());
-		Double dinero = 0.0;
+		Double saldo = 0.0;
 		try {
-			dinero = (Double) request.getContentObject();
+			saldo = (Double) request.getContentObject();
+			if (saldo == null) {
+				throw new IllegalArgumentException("El dinero enviado en el mensaje era null");
+			}
 		} catch (UnreadableException e) {
 			((POAAgent) myAgent).getLogger().info("AperturaCredito",
 					"Fallo en la apertura de credito del comprador " + request.getSender().getLocalName());
@@ -32,15 +35,15 @@ public class AperturaCreditoParticipant extends AchieveREResponder {
 		}
 		// Agregamos el vendedor a lista de vendedores
 		ACLMessage msjRespuesta = request.createReply();
-		if (dinero != null && ((AgenteLonja) this.myAgent).containsComprador(request.getSender())) {
-			((AgenteLonja) this.myAgent).addDineroComprador(request.getSender(), dinero);
+		if (saldo > 0 && ((AgenteLonja) this.myAgent).containsComprador(request.getSender())) {
+			((AgenteLonja) this.myAgent).addDineroComprador(request.getSender(), saldo);
 
 			((POAAgent) myAgent).getLogger().info("AperturaCredito",
-					"Añadido " + dinero + " al comprador " + request.getSender().getLocalName());
+					"Añadido " + saldo + " al comprador " + request.getSender().getLocalName());
 
 			msjRespuesta.setPerformative(ACLMessage.INFORM);
 			try {
-				msjRespuesta.setContentObject(dinero);
+				msjRespuesta.setContentObject(saldo);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

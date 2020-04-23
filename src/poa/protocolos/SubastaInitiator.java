@@ -28,13 +28,14 @@ public class SubastaInitiator extends ContractNetInitiator {
 		if (responses.size() > 0) {
 
 			// Ordenamos las respuestas por fecha de envio
-			responses.sort((msg0, msg1) -> Long.compare(((ACLMessage)msg0).getPostTimeStamp(),((ACLMessage)msg1).getPostTimeStamp()));
+			responses.sort((msg0, msg1) -> Long.compare(((ACLMessage) msg0).getPostTimeStamp(),
+					((ACLMessage) msg1).getPostTimeStamp()));
 
 			// Respondemos a todas las propuestad que recibimos
 			for (int i = 0; i < responses.size(); i++) {
 
 				ACLMessage respuesta = (ACLMessage) responses.get(i);
-				ACLMessage msjRespuesta = ((ACLMessage) responses.get(i)).createReply();
+				ACLMessage msjRespuesta = respuesta.createReply();
 				if (!articuloAdjudicado && ((AgenteLonja) myAgent).suficienteDinero(respuesta.getSender(),
 						articuloActual.getPrecio())) {
 					// Aceptamos la primera propuesta que nos ha llegado si el comprador tiene
