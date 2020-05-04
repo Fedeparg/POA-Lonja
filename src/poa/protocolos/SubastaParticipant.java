@@ -44,7 +44,7 @@ public class SubastaParticipant extends ContractNetResponder {
 			((POAAgent) myAgent).getLogger().info("Subasta", "Pujo por el artículo " + articulo);
 			return puja;
 		} else {
-			((POAAgent)myAgent).getLogger().info("Subasta", "No me interesa el artículo");
+			((POAAgent) myAgent).getLogger().info("Subasta", "No me interesa el artículo");
 			return null;
 		}
 	}
