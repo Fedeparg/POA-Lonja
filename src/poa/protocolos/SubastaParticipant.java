@@ -22,7 +22,6 @@ public class SubastaParticipant extends ContractNetResponder {
 	}
 
 	protected ACLMessage handleCfp(ACLMessage cfp) throws RefuseException, FailureException, NotUnderstoodException {
-		((POAAgent) myAgent).getLogger().info("Subasta", "Recibida oferta de compra");
 		String pescadito = null;
 		double precio = 0;
 		Articulo articulo = null;
@@ -44,8 +43,10 @@ public class SubastaParticipant extends ContractNetResponder {
 			}
 			((POAAgent) myAgent).getLogger().info("Subasta", "Pujo por el artículo " + articulo);
 			return puja;
+		} else {
+			((POAAgent)myAgent).getLogger().info("Subasta", "No me interesa el artículo");
+			return null;
 		}
-		return null;
 	}
 
 	protected ACLMessage handleAcceptProposal(ACLMessage cfp, ACLMessage propose, ACLMessage accept)
