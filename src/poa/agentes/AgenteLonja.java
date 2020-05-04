@@ -276,7 +276,7 @@ public class AgenteLonja extends POAAgent {
 	}
 
 	public void imposibleVender(Articulo articulo) {
-		((POAAgent) this).getLogger().info("Subasta", "Articulo " + articulo + " imposible de vender");
+		((POAAgent) this).getLogger().info("Subasta", "Articulo " + articulo + " imposible de vender. Ha llegado al precio de reserva,");
 		config.imposibleVender(articulo);
 	}
 
